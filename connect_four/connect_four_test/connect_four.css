@@ -1,0 +1,49 @@
+.controller {
+	border-style:solid;
+	width: 25%;
+	height: 600px;
+	float:left;
+}
+.main_canvas {
+	float:right;	
+	width: 74%;
+	height: 600px;
+}
+
+.button {
+	width: 150px;
+	height: 40px;
+	position: relative;
+	top: 30px;
+	left: 30px;
+}
+
+.board {
+	position: relative;
+	top: 30%;
+	left: 25%;
+	width: 500px;
+	border:2px solid;
+	border-radius:5px;
+	-moz-border-radius:5px;
+}
+
+.tableCell {
+	border:2px solid;
+	border-radius:5px;
+	-moz-border-radius:5px;
+}
+
+.redbg{
+	background-color: #FC1501;
+}
+
+.bluebg{
+	background-color: #003F87;
+}
+
+.blinkTextDiv {
+	position:relative;
+	top:25%;
+	left:35%;
+}

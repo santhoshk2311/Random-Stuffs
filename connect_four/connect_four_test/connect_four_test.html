@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>Connect Four</title>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<link rel="stylesheet" type="text/css" href="connect_four.css">
+	</head>
+	<body>
+		<div>
+			<div class="controller">
+				<button id="new_game" class="button" type="button" onClick="document.location.reload(true)">New Game</button>
+			</div>
+			<div class="main_canvas">
+				<div class="blinkTextDiv"><p id="notifyWinArea"></p></div>
+				<table id="board" border="1" class="board">
+				</table> 
+			</div>		
+		</div>
+		<script src="jquery-1.7.1.min.js"></script>
+		<script src="connect_four_include.js"></script>
+		<script src="connect_four_test_cases.js"></script>
+		<script src="connect_four_test.js"></script>
+	</body>
+</html>
