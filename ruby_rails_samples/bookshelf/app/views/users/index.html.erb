@@ -1,0 +1,18 @@
+<h1>Listing users</h1>
+
+<table>
+  <tr>
+    <th>name</th>
+    <th></th>
+  </tr>
+  <% @users.each do |user| %>
+  <tr>
+  <td><%= user.name %></td>
+  <td>
+    <img src="<%= picture_user_path(user.id) %>">
+  </td>
+  </tr>
+  <% end %>
+</table>
+
+<%= link_to 'New User', new_user_path %>

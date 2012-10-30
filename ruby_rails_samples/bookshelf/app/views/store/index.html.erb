@@ -1,0 +1,25 @@
+<% if notice %>
+  <p id="notice"><%= notice %></p>
+<% end %>
+<h1>Your BookShelf</h1>
+
+<% @books.each do |book| %>
+  <div class="entry">
+    <%= image_tag(book.image_url) %>
+      <h3><%= book.title %></h3>
+      <p><%= book.description %></p>
+      <div class="price_line">
+        <% unless book.discount_price %>
+          <span class="price" ><%= number_to_currency book.price %></span><br/>
+        <% else %>
+          <span class="stroke_price" ><%= number_to_currency book.price %></span><br/>
+          <span class="price" ><%= number_to_currency book.discount_price %></span><br/>
+        <% end %>
+        
+        <%= button_to "Add to Cart", line_items_path(:book_id => book.id),
+          line_items_path(:book_id => book.id),
+          :remote => true
+        %>
+      </div>   
+  </div>
+<% end %>

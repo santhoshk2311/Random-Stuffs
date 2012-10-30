@@ -1,0 +1,12 @@
+--- 
+open_files: 
+  - db/migrate/20120925060749_create_books.rb
+  - db/migrate/20120925061903_add_books.rb
+  - db/migrate/20120925063134_add_discount_price_to_books.rb
+  - app/views/books/index.html.erb
+  - app/controllers/books_controller.rb
+  - app/views/books/new.html.erb
+  - app/views/books/_form.html.erb
+  - db/seeds.rb
+  - db/development.sqlite3
+  - test/fixtures/books.yml

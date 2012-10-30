@@ -1,0 +1,26 @@
+<h1>Listing books</h1>
+<table>
+    <% for book in @books %>
+      <tr class="<%= cycle('list_line_odd', 'list_line_even') %>">
+        <td>
+          <%= link_to (image_tag book.image_url, :class => 'list_image'), book %>
+        </td>
+        <td class="list_description">
+          <dl>
+            <dt><%=h book.title %></dt>            
+            <dd><%= truncate(strip_tags(book.description), :length=>100) %></dd>
+          </dl>
+        </td>
+        <td class="list_actions">
+          <%= link_to 'Show', book %><br/>
+          <%= link_to 'Edit', edit_book_path(book) %><br/>
+          <%= link_to 'Destroy', book,
+            :confirm => 'Are you sure?',
+            :method => :delete %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<br />
+
+<%= link_to 'New Book', new_book_path %>

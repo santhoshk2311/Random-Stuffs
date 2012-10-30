@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+ruby:
+  title: Programming Ruby
+  description: dummy description
+  image_url: ruby.png
+  price: 49.99
+  discount_price: 45.99
+
+rails:
+  title: Agile Rails
+  description: dummy description
+  image_url: rails.png
+  price: 39.99
+  discount_price: 29.99

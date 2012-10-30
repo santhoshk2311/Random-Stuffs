@@ -1,0 +1,10 @@
+--- 
+open_files: 
+  - app/controllers/posts_controller.rb
+  - app/views/posts/index.html.erb
+  - app/controllers/foo_controller.rb
+  - config/routes.rb
+  - app/views/foo/greet.html.erb
+  - app/views/foo/bye.html.erb
+  - config/environments/production.rb
+  - config/environments/development.rb

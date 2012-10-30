@@ -1,0 +1,29 @@
+--- 
+cursor_positions: 
+  - :path: app/controllers/posts_controller.rb
+    :cursor_offset: 887
+    :timestamp: 2012-09-27 15:40:22.170000 -07:00
+  - :path: app/views/posts/index.html.erb
+    :cursor_offset: 0
+    :timestamp: 2012-07-16 18:58:58.535000 -07:00
+  - :path: app/controllers/foo_controller.rb
+    :cursor_offset: 67
+    :timestamp: 2012-09-27 16:03:37.253000 -07:00
+  - :path: config/routes.rb
+    :cursor_offset: 42
+    :timestamp: 2012-09-27 16:04:16.943000 -07:00
+  - :path: app/views/foo/greet.html.erb
+    :cursor_offset: 0
+    :timestamp: 2012-09-27 15:54:42.894000 -07:00
+    :selection_offset: 20
+    :block_selection_mode: false
+  - :path: app/views/foo/bye.html.erb
+    :cursor_offset: 15
+    :timestamp: 2012-09-27 15:58:54.223000 -07:00
+  - :path: config/environments/production.rb
+    :cursor_offset: 468
+    :timestamp: 2012-09-27 16:00:57.836000 -07:00
+  - :path: config/environments/development.rb
+    :cursor_offset: 0
+    :timestamp: 2012-07-15 18:51:50.396000 -07:00
+files_to_retain: 0

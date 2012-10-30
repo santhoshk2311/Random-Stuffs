@@ -1,0 +1,144 @@
+--- 
+cursor_positions: 
+  - :path: db/migrate/20120928191449_add.rb
+    :cursor_offset: 0
+    :timestamp: 2012-09-28 12:14:50.046000 -07:00
+  - :path: app/models/book.rb
+    :cursor_offset: 53
+    :timestamp: 2012-09-28 00:32:54.673000 -07:00
+  - :path: test/fixtures/books.yml
+    :cursor_offset: 0
+    :timestamp: 2012-09-24 23:07:50.025000 -07:00
+  - :path: db/development.sqlite3
+    :cursor_offset: 0
+    :timestamp: 2012-09-28 00:26:06.437000 -07:00
+  - :path: db/seeds.rb
+    :cursor_offset: 0
+    :timestamp: 2012-09-27 23:58:25.095000 -07:00
+  - :path: db/migrate/20120925063134_add_discount_price_to_books.rb
+    :cursor_offset: 152
+    :timestamp: 2012-09-24 23:56:03.437000 -07:00
+  - :path: app/views/books/new.html.erb
+    :cursor_offset: 0
+    :timestamp: 2012-09-24 23:07:50.539000 -07:00
+  - :path: db/migrate/20120925061903_add_books.rb
+    :cursor_offset: 365
+    :timestamp: 2012-09-25 08:52:00.328000 -07:00
+  - :path: db/migrate/20120925060749_create_books.rb
+    :cursor_offset: 212
+    :timestamp: 2012-09-24 23:08:49.247000 -07:00
+  - :path: db/migrate/20120928072511_create_line_items.rb
+    :cursor_offset: 0
+    :timestamp: 2012-09-28 00:25:11.257000 -07:00
+  - :path: db/migrate/20120928191610_add_quantity_to_line_items.rb
+    :cursor_offset: 118
+    :timestamp: 2012-09-28 12:16:44.806000 -07:00
+  - :path: app/controllers/line_items_controller.rb
+    :cursor_offset: 261
+    :timestamp: 2012-09-28 17:14:35.356000 -07:00
+  - :path: app/models/cart.rb
+    :cursor_offset: 224
+    :timestamp: 2012-09-28 16:36:29.914000 -07:00
+  - :path: app/controllers/carts_controller.rb
+    :cursor_offset: 208
+    :timestamp: 2012-09-28 12:28:03.927000 -07:00
+  - :path: app/views/carts/show.html.erb
+    :cursor_offset: 94
+    :timestamp: 2012-09-28 16:34:18.285000 -07:00
+  - :path: app/views/books/index.html.erb
+    :cursor_offset: 288
+    :timestamp: 2012-09-28 14:43:45.582000 -07:00
+  - :path: app/models/line_item.rb
+    :cursor_offset: 188
+    :timestamp: 2012-09-28 13:54:07.341000 -07:00
+  - :path: db/migrate/20120928210337_create_orders.rb
+    :cursor_offset: 0
+    :timestamp: 2012-09-28 14:03:37.052000 -07:00
+  - :path: config/routes.rb
+    :cursor_offset: 40
+    :timestamp: 2012-09-28 18:48:32.194000 -07:00
+  - :path: app/views/books/show.html.erb
+    :cursor_offset: 58
+    :timestamp: 2012-09-28 16:13:47.863000 -07:00
+  - :path: app/models/order.rb
+    :cursor_offset: 123
+    :timestamp: 2012-09-28 14:24:09.697000 -07:00
+  - :path: app/controllers/orders_controller.rb
+    :cursor_offset: 101
+    :timestamp: 2012-09-28 19:14:02.925000 -07:00
+  - :path: app/views/orders/new.html.erb
+    :cursor_offset: 838
+    :timestamp: 2012-09-28 14:14:46.772000 -07:00
+  - :path: app/views/books/edit.html.erb
+    :cursor_offset: 0
+    :timestamp: 2012-09-24 23:07:50.527000 -07:00
+  - :path: app/controllers/books_controller.rb
+    :cursor_offset: 1876
+    :timestamp: 2012-09-28 19:15:37.731000 -07:00
+  - :path: app/views/books/_form.html.erb
+    :cursor_offset: 722
+    :timestamp: 2012-09-24 23:43:00.980000 -07:00
+  - :path: app/assets/stylesheets/carts.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-24 20:19:30 -07:00
+  - :path: app/controllers/application_controller.rb
+    :cursor_offset: 379
+    :timestamp: 2012-09-28 19:15:45.355000 -07:00
+  - :path: app/views/store/index.html.erb
+    :cursor_offset: 726
+    :timestamp: 2012-09-28 17:22:01.550000 -07:00
+  - :path: app/assets/stylesheets/store.css.scss
+    :cursor_offset: 968
+    :timestamp: 2012-05-24 19:39:28 -07:00
+  - :path: app/assets/stylesheets/application.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-24 19:41:24 -07:00
+  - :path: app/controllers/store_controller.rb
+    :cursor_offset: 123
+    :timestamp: 2012-09-28 16:40:49.623000 -07:00
+  - :path: app/assets/stylesheets/scaffolds.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-10 20:13:34 -07:00
+  - :path: app/assets/stylesheets/orders.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-24 21:17:02 -07:00
+  - :path: app/assets/stylesheets/line_items.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-24 20:03:04 -07:00
+  - :path: app/assets/stylesheets/books.css.scss
+    :cursor_offset: 0
+    :timestamp: 2012-05-24 19:36:52 -07:00
+  - :path: app/views/layouts/application.html.erb
+    :cursor_offset: 569
+    :timestamp: 2012-09-28 23:08:44.788000 -07:00
+  - :path: app/views/carts/_cart.html.erb
+    :cursor_offset: 302
+    :timestamp: 2012-09-28 17:18:04.759000 -07:00
+  - :path: app/views/line_items/create.js.erb
+    :cursor_offset: 65
+    :timestamp: 2012-09-28 23:19:07.306000 -07:00
+  - :path: app/models/user.rb
+    :cursor_offset: 0
+    :timestamp: 2012-09-25 22:58:55.344000 -07:00
+  - :path: app/views/users/new.html.erb
+    :cursor_offset: 18
+    :timestamp: 2012-09-28 17:45:23.516000 -07:00
+  - :path: app/controllers/users_controller.rb
+    :cursor_offset: 270
+    :timestamp: 2012-09-28 17:49:31.098000 -07:00
+  - :path: app/views/users/index.html.erb
+    :cursor_offset: 168
+    :timestamp: 2012-09-28 17:56:38.910000 -07:00
+  - :path: app/views/account/create.html.erb
+    :cursor_offset: 0
+    :timestamp: 2012-09-28 18:38:00.028000 -07:00
+  - :path: app/views/account/new.html.erb
+    :cursor_offset: 458
+    :timestamp: 2012-09-28 18:42:38.451000 -07:00
+  - :path: app/controllers/account_controller.rb
+    :cursor_offset: 62
+    :timestamp: 2012-09-28 23:19:13.968000 -07:00
+  - :path: app/views/orders/index.html.erb
+    :cursor_offset: 22
+    :timestamp: 2012-09-28 19:11:54.714000 -07:00
+files_to_retain: 0

@@ -1,0 +1,39 @@
+<!-- START:head -->
+<!DOCTYPE html>
+<html>
+<head>
+<!-- START_HIGHLIGHT -->
+  <title>Books Online Store</title>
+<!-- END_HIGHLIGHT -->
+  <%= stylesheet_link_tag "application" %><!-- <label id="code.slt"/> -->
+  <%= javascript_include_tag "application" %><!-- <label id="code.jlt"/> -->
+  <%= csrf_meta_tag %><!-- <label id="code.csrf"/> -->
+
+</head>
+<!-- END:head -->
+<body class="<%= controller.controller_name %>">
+<!-- START_HIGHLIGHT -->
+  <div id="banner">
+    <%= @page_title || "Bookshelf" %><!-- <label id="code.depot.e.title"/> -->
+  </div>
+  <div id="columns">
+    <div id="side">
+      <ul>
+        <li><a href="/books">Books</a></li>
+        <li><a href="/orders">Orders</a></li>
+        <li><a href="/users">Users</a></li>
+        <% if session[:user_id] %>
+        <li><%= link_to 'Log Out', '/logout', :method=>:delete %></li>
+        <% end %>
+      </ul>
+    </div>
+    <div id="main">
+
+<!-- END_HIGHLIGHT -->
+      <%= yield %><!-- <label id="code.depot.e.include"/> -->
+<!-- START_HIGHLIGHT -->
+    </div>
+  </div>
+<!-- END_HIGHLIGHT -->
+</body>
+</html>
