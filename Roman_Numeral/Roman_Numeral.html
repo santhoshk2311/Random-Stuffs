@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>Convert Number to Roman Numeral</title>
+	</head>
+
+	<body>
+		<form onsubmit="return convertToRoman();" action="">
+			<table border="0" width="580" cellpadding="5">
+				<tr>
+					<td>Enter a number to convert to Roman Numeral:</td>
+					<td><input id="number_input"/>
+				</tr>
+				<tr>
+					<td><input type="submit" value="Convert To Roman Numeral"</td>
+				</tr>
+			</table>		
+		</form>
+		<script language="javascript">
+			// position array which is needed to replace the roman numeral character according to the number.
+			var positionAr = [
+				['I', 'V', 'X'],
+				['X', 'L', 'C'],
+				['C', 'D', 'M']
+			];
+			// Main function that reads each digit in the number from LSD to MSD
+			// and converts each digit to roman numberal.
+			function convertToRoman() {
+				var number = document.getElementById("number_input").value;
+				var ch;
+				var romanStr = "";
+				for (ch=number.length-1;ch>=0;ch--) {
+					romanStr = getRomanForDigit(parseInt(number[ch],10),(number.length-1)-ch) + romanStr;
+				}
+				alert(romanStr);
+			}
+			//Input: digit and the position of the digit in the number.
+			//Output: Returns the corresponding roman numeral represenation.
+			function getRomanForDigit(digit,pos) {
+				var tempRomanStr="";
+				if (pos > 2) {
+					//Since there is not symbol after thousand's position, we have 
+					// to form the number after that positon and add that many 'M's.
+					for (var indx=0;indx<(digit*Math.pow(10,pos-3));indx++)
+						tempRomanStr += 'M';
+				} else {
+					//Handling of each number from 1 to 9 depending upon the position of rhw digit.
+					if (digit == 1) {
+						return positionAr[pos][0];
+					} else if (digit == 2) {
+						return positionAr[pos][0] + positionAr[pos][0];
+					} else if (digit == 3) {
+						return positionAr[pos][0] + positionAr[pos][0] + positionAr[pos][0];
+					} else if (digit == 4) {
+						return positionAr[pos][0] + positionAr[pos][1];
+					} else if (digit == 5) {
+						return positionAr[pos][1];
+					} else if (digit == 6) {
+						return positionAr[pos][1] + positionAr[pos][0];
+					} else if (digit == 7) {
+						return positionAr[pos][1] + positionAr[pos][0] + positionAr[pos][0];
+					} else if (digit == 8) {
+						return positionAr[pos][1] + positionAr[pos][0] + positionAr[pos][0] + positionAr[pos][0];
+					} else if (digit == 9) {
+						return positionAr[pos][0] + positionAr[pos][2];
+					} else {
+						return '';
+					}
+				}
+				return tempRomanStr;
+			}
+		</script>
+	</body>
+</html>
