@@ -1,5 +1,5 @@
 var game,grid;
-var noOfRows,noOfRows,noOfRows;
+var noOfRows,noOfRows,noOfRows,difficultyLevel,openedCellsPosAr;
 
 function createGrid(rowMax, colMax) {
 	var grid = [];
@@ -37,11 +37,27 @@ function placeMines(grid,rowMax,colMax,mineCount) {
 	return grid;
 }
 
-function Game(noOfRows, noOfCols, mineCount) {
-    grid = createGrid(noOfRows,noOfCols);
-	placeMines(grid,noOfRows,noOfCols,mineCount);
+function Game(noOfRows, noOfCols, mineCount,isLoadingGame) {
+	isLoadingGame = typeof isLoadingGame !== 'undefined' ? isLoadingGame : false;
+	
+	if (!isLoadingGame) {
+		openedCellsPosAr = [];
+		grid = createGrid(noOfRows,noOfCols);
+		placeMines(grid,noOfRows,noOfCols,mineCount);
+	}	
+	
 	$('#board').empty();
 	createDynamicTable($('#board'), noOfRows, noOfCols);
+	
+	if (isLoadingGame) {
+		openCells();
+	}
+	
+	function openCells() {
+		for (var i=0;i<openedCellsPosAr.length;i++) {
+			$('#' + openedCellsPosAr[i]).removeClass('notchecked');
+		}
+	}
 	
 	function isMine($el) {
 		return (($el.text()) == "*");
@@ -62,14 +78,18 @@ function Game(noOfRows, noOfCols, mineCount) {
 		
 		var rowCol = $el.attr('id');
 		var rowColSplit = rowCol.split("_");
-		var r = +(rowColSplit[0]),c = +(rowColSplit[1]);
+		var r = +(rowColSplit[0]),c = +(rowColSplit[1]);		
 		
 		var _d = function($e) {
 			showNeighbourCount++;
 			return function() {
 				checkNeighbours($e,$('#board'),openCell);
-				if (--showNeighbourCount)
+				if (--showNeighbourCount) {
+					var rowColPos = $e.attr('id');
+					if (jQuery.inArray(rowColPos, openedCellsPosAr) == -1)
+							openedCellsPosAr.push(rowColPos);						
 					openCell();
+				}
 			}
 		};
 		
@@ -78,7 +98,10 @@ function Game(noOfRows, noOfCols, mineCount) {
 				var $currEl = $('#' + (x+r) + '_' + (y+c));
 				if ((r+x>=0 && r+x<noOfRows && c+y >=0 && c+y<noOfCols)
 					&& $currEl.hasClass('notchecked') && !isMine($currEl)) {
-						//checkNeighbours($currEl,$('#board'));
+						//checkNeighbours($currEl,$('#board'));	
+						var rowColPos = $currEl.attr('id');
+						if (jQuery.inArray(rowColPos, openedCellsPosAr) == -1)
+							openedCellsPosAr.push(rowColPos);						
 						setTimeout(_d($currEl.removeClass('notchecked')), 50);
 				}
 			}
@@ -91,7 +114,9 @@ function Game(noOfRows, noOfCols, mineCount) {
 		$('.notchecked').removeClass('notchecked');		
 		$("#board").unbind('click');
 		$("#validate_game").attr("disabled", "disabled");
-		$("#cheat_game").attr("disabled", "disabled");		
+		$("#cheat_game").attr("disabled", "disabled");
+		$("#save_game").attr("disabled", "disabled");
+		$("#clear_game").attr("disabled", "disabled");
 	}
 	
 	function doWin() {		
@@ -135,13 +160,14 @@ function Game(noOfRows, noOfCols, mineCount) {
 			break;	
 		}
 	});
-	
+	$("#board").unbind();
 	$("#board").click(function(e) {
-		var $tdElement = $(e.target).closest('td');
+		var $tdElement = $(e.target).closest('td');		
 		if ($tdElement.length == 0)
 			return;
+		
 		var openCell = function () {
-			$tdElement.removeClass("notchecked");
+			$tdElement.removeClass("notchecked");			
 			if (isWinning()) 
 				doWin();
 		};
@@ -152,10 +178,22 @@ function Game(noOfRows, noOfCols, mineCount) {
 			if (isEmpty($tdElement)) {
 				checkNeighbours($tdElement,$("#board"),openCell);
 			} else {
+				var rowColPos = $tdElement.attr('id');
+				if (jQuery.inArray(rowColPos, openedCellsPosAr) == -1)
+					openedCellsPosAr.push(rowColPos);
 				openCell();				
 			}
 		}	
 	});
+	
+	function saveGame() {
+		var gridJson = JSON.stringify(grid);
+		var openedCellsPosJson = JSON.stringify(openedCellsPosAr);
+		$.jStorage.set("grid", gridJson);
+		$.jStorage.set("openCells", openedCellsPosJson);
+		$.jStorage.set("difficultyLevel", difficultyLevel);		
+		alert("Saved Game!!!");
+	}
 	
 	// public functions
 	this.isActive = function() { 
@@ -163,6 +201,7 @@ function Game(noOfRows, noOfCols, mineCount) {
 	}; 
 	this.doWin = doWin;
 	this.doFail = doFail;
+	this.saveGame = saveGame;
 }
 
 function createDynamicTable(tbody, rows, cols) {
@@ -189,8 +228,7 @@ function createDynamicTable(tbody, rows, cols) {
 	}
 }
 
-function startNewGame() {
-	var difficultyLevel = $("input[@name=difficulty]:checked").val();
+function setRowsColsMines(difficultyLevel) {
 	if (difficultyLevel == "easy") {
 		noOfRows = 8;
 		noOfCols = 8;
@@ -198,21 +236,93 @@ function startNewGame() {
 	} else if (difficultyLevel == "medium") {
 		noOfRows = 16;
 		noOfCols = 16;
-		noOfMines = 30;
+		noOfMines = 40;
 	} else if (difficultyLevel == "hard") {
 		noOfRows = 32;
 		noOfCols = 32;
-		noOfMines = 60;
-	}	
+		noOfMines = 150;
+	}
+}
+
+function enableButtons() {
+	$("#validate_game").removeAttr("disabled");	
+	$("#cheat_game").removeAttr("disabled");	
+	$("#save_game").removeAttr("disabled");
+	if (isLoadGameAvailable()) {
+		$("#clear_game").removeAttr("disabled");
+		$("#load_game").removeAttr("disabled");
+	}
+}
+
+function startNewGame() {
+	difficultyLevel = $("input[@name=difficulty]:checked").val();
+	setRowsColsMines(difficultyLevel);		
 	//createDynamicTable($("#board"), noOfRows, noOfCols);	
 	game = new Game(+(noOfRows), +(noOfCols), +(noOfMines));
-	$("#validate_game").removeAttr("disabled");
-	$("#cheat_game").removeAttr("disabled");
+	enableButtons();	
+}
+
+function isLoadGameAvailable() {
+	//Local variables, just for testing load game availability.
+	var grid,difficultyLevel,openedCellsPosAr;
+	grid = JSON.parse($.jStorage.get("grid"));		
+	difficultyLevel = $.jStorage.get("difficultyLevel");
+	openedCellsPosAr = JSON.parse($.jStorage.get("openCells"));
+	if (grid != null && difficultyLevel != null && openedCellsPosAr != null) 
+		return true;
+	else 
+		return false;	
+}
+
+function loadGame() {
+	if (isLoadGameAvailable()) {
+		grid = JSON.parse($.jStorage.get("grid"));		
+		difficultyLevel = $.jStorage.get("difficultyLevel");
+		openedCellsPosAr = JSON.parse($.jStorage.get("openCells"));
+		if (typeof game == 'undefined' || confirm("Are you sure you want to load last saved game?")) {	
+			if (typeof game == 'undefined' && confirm("There is already a game saved. Do you want to load already saved game? Cancel will load a new game.")) {				
+					setRowsColsMines(difficultyLevel);
+					game = new Game(+(noOfRows), +(noOfCols), +(noOfMines),true);
+			} else {
+				if (typeof game != 'undefined') {
+					setRowsColsMines(difficultyLevel);
+					game = new Game(+(noOfRows), +(noOfCols), +(noOfMines),true);					
+				} else {
+					startNewGame();
+				}
+			}			
+			enableButtons();
+		} else {
+			startNewGame();
+		}
+		return true;
+	} else {
+		$("#clear_game").attr("disabled", "disabled");
+		return false;
+	}
+}
+
+function clearGame() {
+	if (isLoadGameAvailable() && confirm("Are you sure you want to clear the last saved game?")) {
+		$.jStorage.flush();
+		$("#clear_game").attr("disabled", "disabled");
+		$("#load_game").attr("disabled", "disabled");
+	}
+}
+
+
+function toggleCellClass(el) {
+	el.each(function() {
+		$(this).toggleClass("notchecked");
+	});
 }
 
 $('#new_game').click(function() {
-	if (!game.isActive() || confirm("Are you sure you want to restart the game?")) {	
-		startNewGame();		
+	if ((typeof game != 'undefined' && game.isActive())) {
+		if (confirm("Are you sure you want to restart the game?"))
+			startNewGame();		
+	} else {
+		startNewGame();
 	}
 });
 
@@ -232,17 +342,31 @@ $('#validate_game').click(function() {
 	
 });
 
-function toggleCellClass(el) {
-	el.each(function() {
-		$(this).toggleClass("notchecked");
-	});
-}
 
 $('#cheat_game').click(function() {
 	setTimeout(function() { toggleCellClass($('.mine'));},100);	
 	toggleCellClass($('.mine'));
+	
+});
+
+$('#save_game').click(function() {
+	game.saveGame();
+	$("#load_game").removeAttr("disabled");
+	$("#clear_game").removeAttr("disabled");
+});
+
+$('#load_game').click(function() {
+	loadGame();
+});
+
+$('#clear_game').click(function() {
+	clearGame();
 });
 
 $(document).ready(function(){
-	startNewGame();
+	if (!loadGame()) {
+		startNewGame();
+		$("#load_game").attr("disabled", "disabled");
+		$("#clear_game").attr("disabled", "disabled");
+	} 
 });

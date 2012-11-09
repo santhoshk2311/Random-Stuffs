@@ -9,6 +9,7 @@
 	float:right;	
 	width: 74%;
 	height: 600px;
+	text-align:center;
 }
 
 .button {
@@ -31,10 +32,23 @@
 	left: 30px;
 }
 
+.load_button {
+	top: 180px;
+	left: 30px;
+}
+.save_button {
+	top: 230px;
+	left: 30px;
+}
+
+.clear_button {
+	top: 280px;
+	left: 30px;
+}
+
 .board {
 	position: relative;
-	top: 10%;
-	left: 40%;
+	margin: 0px auto;
 	border:2px solid;
 	border-radius:5px;
 	-moz-border-radius:5px;
