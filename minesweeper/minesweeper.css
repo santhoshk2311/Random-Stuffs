@@ -1,0 +1,83 @@
+.controller {
+	border-style:solid;
+	width: 25%;
+	height: 600px;
+	float:left;
+	overflow:auto;
+}
+.main_canvas {
+	float:right;	
+	width: 74%;
+	height: 600px;
+}
+
+.button {
+	width: 150px;
+	height: 40px;	
+	position: absolute;
+}
+
+.newgame_button {
+	top: 30px;
+	left: 30px;
+}
+.validate_button {
+	top: 80px;
+	left: 30px;
+}
+
+.cheat_button {
+	top: 130px;
+	left: 30px;
+}
+
+.board {
+	position: relative;
+	top: 10%;
+	left: 40%;
+	border:2px solid;
+	border-radius:5px;
+	-moz-border-radius:5px;
+}
+
+.blinkTextDiv {
+	position:relative;
+	top:25%;
+	left:35%;
+}
+
+.tableCell {
+	font-size:10px;
+	background: none repeat scroll 0 0 white;
+	border: 1px solid black;
+	text-align:center;	
+}
+
+.notchecked {
+	background: none repeat scroll 0 0 grey;	
+	background-image:url(images/notchecked.gif);		
+	text-indent: -9999px;
+}
+
+
+.mine {
+	background-color: red;
+}
+
+.redflag {
+	background:none repeat scroll 0 0 grey;
+}
+
+.difficulty_container {
+	border: 0px solid #000000;
+	overflow: hidden;
+	width: 100%;
+}
+
+.difficulty {
+	float:left;
+}
+
+.button_container {
+	position: relative;
+}
