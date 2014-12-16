@@ -15,5 +15,6 @@ Minesweeper - Minesweeper game using Jquery.
 
 PathFinder - Recent Hackathon Project. 
   An android/iphone app which will guide a person to find another person's cube or conference room.
+  Uses Ionic Framework annd Angular JS.
   
 Ruby Rails - Trying to learn Ruby on Rails.
