@@ -1,0 +1,37 @@
+Rules of the Game:
+==================
+1. Board is 9*9 matrix.
+2. Board is divided into 9 small matrix (3*3) which will be called "Blocks".
+3. Each square in 9*9 matrix takes values from 1 to 9.
+4. Game is over when:
+	4.1. All square is filled with number 1 to 9.
+	4.2. Numbers must be unique per row.
+	4.3. Numbers must be unique per column.
+	4.4. Numbers must be unique within each blocks.
+
+
+
+Technologies Used:
+==================
+1) Jquery javascript library.
+2) Sass CSS pre-processor.
+
+
+Features of the Game:
+=====================
+
+Minimumal Features:
+===================
+1) New Game
+2) Load Game
+3) Save Game
+4) Restart Game
+5) Validate
+6) Clear
+7) Undo last move
+7) Running timer
+
+Addtional Features:
+===================
+1) Solve
+2) Board Generators based on difficulty level: Easy, Medium, Hard, Evil
