@@ -3,13 +3,13 @@ $sidebarwidth: 	20%;
 .left-container {
 	float: left;
 	width: $sidebarwidth;
-	border:solid red;
+	//border:solid red;
 }
 
 .right-container {
 	float: right;
 	width: $sidebarwidth;
-	border:solid red;
+	//border:solid red;
 }
 
 .container-div {
@@ -19,9 +19,39 @@ $sidebarwidth: 	20%;
 
 .fit {
 	table-layout:fixed;
-	width: 99%;
+	width: 60%;
+}
+
+.header {
+	border-bottom: 5px solid black;
+	border-bottom-radius: 2em;
 }
 
 table, td {
 	border: 1px solid black;
+}
+
+table {
+	td {
+		width: 10%;
+		position:relative;
+		input {
+			width: 92%;
+			position:absolute;
+		    top:0;
+		    bottom:0;
+		    left:0;
+		    right:0;
+		    text-align: center;
+		    font-size: 30px;
+		}
+	}
+  	margin: 0 auto;
+  	margin-top: 10%;
+}
+
+td:after {
+	content:'';
+    display:block;
+    margin-top:100%;
 }

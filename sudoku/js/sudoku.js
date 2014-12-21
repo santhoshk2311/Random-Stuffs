@@ -31,7 +31,8 @@ var Sudoku = (function($) {
 			for(var i=0; i<9; i++){
 			    var row = $('<tr></tr>');
 			    for (var j=0; j<9; j++) {
-			    	row.append($('<td>').html(j));
+			    	var input = $('<input type="text"/>');
+			    	row.append($('<td>').append(input));
 			    }
 			    //console.log(row);
 			    table.append(row);

@@ -1,12 +1,10 @@
 .left-container {
   float: left;
-  width: 20%;
-  border: solid red; }
+  width: 20%; }
 
 .right-container {
   float: right;
-  width: 20%;
-  border: solid red; }
+  width: 20%; }
 
 .container-div {
   float: left;
@@ -14,9 +12,34 @@
 
 .fit {
   table-layout: fixed;
-  width: 99%; }
+  width: 60%; }
+
+.header {
+  border-bottom: 5px solid black;
+  border-bottom-radius: 2em; }
 
 table, td {
   border: 1px solid black; }
+
+table {
+  margin: 0 auto;
+  margin-top: 10%; }
+  table td {
+    width: 10%;
+    position: relative; }
+    table td input {
+      width: 92%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 30px; }
+
+td:after {
+  content: '';
+  display: block;
+  margin-top: 100%; }
 
 /*# sourceMappingURL=base.css.map */
