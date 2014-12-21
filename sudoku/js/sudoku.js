@@ -22,32 +22,85 @@ var Sudoku = (function($) {
 	 */
 
 	function SudokuGameUI() {
-		// properties  
+		var _gameObj;
+
+		/*
+		 *	Sudoku Game Class.
+		 *  Has all game logic like GenerateBoard, Solve, Validate etc.
+		 */
+		function Game() {
+			//Game Properties
+			var _sudokuMatrix;
+		}
+
+		Game.prototype = {
+			generateBoardMatrix: function() {
+				_sudokuMatrix = [];
+				_sudokuMatrix = [
+					[5,3,'x','x',7,'x','x','x','x'],
+					[6,'x','x',1,9,5,'x','x','x'],
+					['x',9,8,'x','x','x','x',6,'x'],
+					[8,'x','x','x',6,'x','x','x',3],
+					[4,'x','x',8,'x',3,'x','x',1],
+					[7,'x','x','x',2,'x','x','x',6],
+					['x',6,'x','x','x','x',2,8,'x'],
+					['x','x','x',4,1,9,'x','x',5],
+					['x','x','x','x',8,'x','x',7,9]
+				];
+
+				return _sudokuMatrix;
+			}
+		};
+
+		this.getGameInstance = function() {
+			if (!_gameObj) {
+				_gameObj = new Game();
+				return _gameObj;
+			} else
+				return _gameObj; 
+		};
 	}
 
 	SudokuGameUI.prototype = {
 		constructBoardUI: function() {
+			var gameObj = this.getGameInstance();
+
+			var cellData = gameObj.generateBoardMatrix();
+
 			var table = $('<table></table>').addClass("fit");
 			for(var i=0; i<9; i++){
 			    var row = $('<tr></tr>');
 			    for (var j=0; j<9; j++) {
+			    	var data = cellData[i][j];
 			    	var input = $('<input type="text"/>').attr({
-			    		'maxlength': "1",
+			    		'maxlength': "2",
 			    		'min': '1',
 			    		'max': '9'});
 
+			    	if (data >= 1 && data <=9) {
+			    		input.attr({
+			    			'value' : data,
+			    			'disabled': true
+			    		});
+			    	}
+
 			    	input.keyup(function(){
 			    		var val = $(this).val();
+			    		var preval;
+
+			    		if (val.length == 2) {
+			    			preval = val[0];
+			    			val = val[1];
+			    		} 
+
 			    		if (!$.isNumeric(val) || val == 0) {
-			    			this.value = '';
-			    			return false;
+			    			val = '';
 			    		}
 
-			    		if (val.length > 1) {
-			    			this.value = val.substring(0,1);
-			    			console.log(val.substring(0,1));
-			    			return false;
-			    		}
+			    		if (preval && val == '')
+			    			this.value = preval;
+			    		else 
+			    			this.value = val;
 			    	});
 
 			    	var td = $('<td>');
@@ -62,7 +115,6 @@ var Sudoku = (function($) {
 					}
 			    	row.append(td.append(input));
 			    }
-			    //console.log(row);
 			    table.append(row);
 			}
 			return table;
