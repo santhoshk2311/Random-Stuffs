@@ -7,15 +7,17 @@
         <script src="js/sudoku.js"></script>
     </head>
 	<body>
+		<div><h1>Sudoku</h1></div>
+		<div id="left" class="left-container">Left Panel</div>
+		<div id="center" class="container-div"></div>
+		<div id="right" class="right-container">Right Panel</div>
+		<br style="clear: left;"/>
 		<script type="text/javascript">
 			$( document ).ready( function() {
 				var sudoku = Sudoku.getInstance();
-				console.log(sudoku);
-			} );
+				var table = sudoku.getBoard();
+				$('#center').append(table);
+			});
 		</script>
-		<div id="left" class="side-div"><h1>Div 1</h1></div>
-		<div id="center" class="container-div"><h1>Div 2</h1></div>
-		<div id="right" class="side-div"><h1>Div 3</h1></div>
-		<br style="clear: left;"/>
 	</body>
 </html>

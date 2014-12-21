@@ -1,11 +1,27 @@
 $sidebarwidth: 	20%;
 
-.side-div {
+.left-container {
 	float: left;
 	width: $sidebarwidth;
+	border:solid red;
+}
+
+.right-container {
+	float: right;
+	width: $sidebarwidth;
+	border:solid red;
 }
 
 .container-div {
 	float: left;
 	width: 60%;
+}
+
+.fit {
+	table-layout:fixed;
+	width: 99%;
+}
+
+table, td {
+	border: 1px solid black;
 }
