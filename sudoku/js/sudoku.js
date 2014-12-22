@@ -174,7 +174,7 @@ var Sudoku = (function($) {
 
 		this.constructBoardUI = function() {
 			var gameObj = this.getGameInstance();
-
+			var prevFailData;
 			var cellData = gameObj.createBoardMatrix();
 
 			var table = $('<table id="sudokuTable"></table>').addClass("fit");
@@ -191,7 +191,9 @@ var Sudoku = (function($) {
 			    		input.attr({
 			    			'value' : data,
 			    			'disabled': true,
-			    		}).addClass("disabled-content");
+			    		}).addClass("disabled-content").data("can-edit",false);
+			    	} else if (data == 'x') {
+			    		input.data("can-edit", true);	
 			    	}
 
 			    	input.data("index", {row:i, col:j});
@@ -201,6 +203,7 @@ var Sudoku = (function($) {
 			    		var oldval = $(this).data("oldval");
 			    		var val = $(this).val();
 			    		var preval;
+			    		var rowFailData, colFailData, blockFailData;
 
 			    		if (val.length == 2) {
 			    			preval = val[0];
@@ -216,22 +219,19 @@ var Sudoku = (function($) {
 
 			    		var index = $(this).data("index");
 
-			    		var prevFailData = {
-			    			rowFail: $(this).data("row-error"),
-			    			colFail: $(this).data("col-error"),
-			    			blockFail: $(this).data("block-error")
-			    		};
-
 			    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
 
 			    		if (validate !== true) {
-			    			var rowFailData = validate.rowFail;
-			    			var colFailData = validate.colFail;
-			    			var blockFailData = validate.blockFail;
-
+			    			rowFailData = validate.rowFail;
+			    			colFailData = validate.colFail;
+			    			blockFailData = validate.blockFail;
+			    			
 			    			$(this).data("row-error",rowFailData);
 			    			$(this).data("col-error",colFailData);
 			    			$(this).data("block-error",blockFailData);
+
+			    			console.log("setting fail data");
+							console.log(rowFailData, colFailData, blockFailData);
 
 			    			var rowVal = (rowFailData)?index.row:-1;
 			    			var colVal = (colFailData)?index.col:-1;
@@ -240,16 +240,64 @@ var Sudoku = (function($) {
 							var blockPos = (blocki*3) + blockj;
 			    			var blockVal = (blockFailData) ? blockPos :-1;
 			    			_gameUI.highlightErrorsUI(rowVal, colVal, blockVal);
+
+			    			var table = $('#sudokuTable')[0];
+
+			    			for (var k=0; k<9; k++) {
+			    				if (rowFailData) {
+			    					if (index.col != k) {
+				    					cell = table.rows[index.row].cells[k];
+										var inputNode = $(cell).find("input");
+				    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+											inputNode.data("row-error", true);
+										}
+									}
+			    				}
+			    				if (colFailData) {
+			    					if (index.row != k) {
+			    						cell = table.rows[k].cells[index.col];
+										var inputNode = $(cell).find("input");
+				    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+											inputNode.data("col-error", true);
+										}
+			    					}
+			    				}
+			    				if (blockVal != -1) {
+									x = Math.floor(blockVal / 3) * 3;
+									y = Math.floor(blockVal % 3) * 3;
+									for (var i=0;i<3;i++) {
+										row = x + i;
+										for (var j=0;j<3;j++) {
+											col = y + j;
+											if (index.row == row && index.col == col) {
+												continue;
+											}
+											cell = table.rows[row].cells[col];
+											var inputNode = $(cell).find("input");
+					    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+												inputNode.data("block-error", true);
+											}
+										}
+									}
+								}
+			    			}
+
 			    		} else {
-			    			var rowVal = (prevFailData.rowFail) ? index.row : -1;
-			    			var colVal = (prevFailData.colFail) ? index.col : -1;
+			    			rowFailData = $(this).data("row-error");
+			    			colFailData = $(this).data("col-error");
+			    			blockFailData = $(this).data("block-error");
+			    			var rowVal = (rowFailData) ? index.row : -1;
+			    			var colVal = (colFailData) ? index.col : -1;
 			    			var blocki = Math.floor(index.row / 3);
 			    			var blockj = Math.floor(index.col / 3);
 							var blockPos = (blocki*3) + blockj;
-							var blockVal = (prevFailData.blockFail) ? blockPos : -1;
+							var blockVal = (blockFailData) ? blockPos : -1;
+							console.log("getting fail data");
+							console.log(rowFailData, colFailData, blockFailData);
 			    			_gameUI.unhighlightErrorsUI(rowVal, colVal, blockVal);
 			    		}
 			    		$(this).data("oldval",val);
+			    		$(this).data("val",val);
 			    		this.value = val;	
 			    	});
 
