@@ -42,6 +42,8 @@ table {
 		    right:0;
 		    text-align: center;
 		    font-size: 35px;
+		    font-style: italic;
+		    color: #B43004;
 		}
 	}
   	margin: 0 auto;
@@ -57,15 +59,25 @@ td:after {
 }
 
 .bg-color1 {
-	background-color: #D8E0CE
+	background-color: #D8E0CE;
 }
 
 .bg-color2 {
-	background-color: #EFECE5
+	background-color: #EFECE5;
+}
+
+.error-bg-color {
+	background-color: #ffbdbd;
+	
 }
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+.disabled-content {
+	font-style: bold;
+	color: #000000;
 }

@@ -36,7 +36,9 @@ table {
       left: 0;
       right: 0;
       text-align: center;
-      font-size: 35px; }
+      font-size: 35px;
+      font-style: italic;
+      color: #B43004; }
 
 td:after {
   content: '';
@@ -49,9 +51,16 @@ td:after {
 .bg-color2 {
   background-color: #EFECE5; }
 
+.error-bg-color {
+  background-color: #ffbdbd; }
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0; }
+
+.disabled-content {
+  font-style: bold;
+  color: #000000; }
 
 /*# sourceMappingURL=base.css.map */

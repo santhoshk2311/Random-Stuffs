@@ -29,12 +29,17 @@ var Sudoku = (function($) {
 		 *  Has all game logic like GenerateBoard, Solve, Validate etc.
 		 */
 		function Game() {
-			//Game Properties
+			//Private Game Properties
 			var _sudokuMatrix;
-		}
+			var _validationMatrix = {
+				rowi:[],
+				colj:[],
+				blockij:[]
+			};
 
-		Game.prototype = {
-			generateBoardMatrix: function() {
+			//Private Game Methods
+
+			var generateBoardMatrix = function() {
 				_sudokuMatrix = [];
 				_sudokuMatrix = [
 					[5,3,'x','x',7,'x','x','x','x'],
@@ -47,10 +52,117 @@ var Sudoku = (function($) {
 					['x','x','x',4,1,9,'x','x',5],
 					['x','x','x','x',8,'x','x',7,9]
 				];
-
 				return _sudokuMatrix;
+			};
+
+			// Takes row and col index and returns block position (0..8)
+			var getBlockPos = function(row, col) {
+				var blocki = Math.floor(row / 3);
+    			var blockj = Math.floor(col / 3);
+    			 //convert blocki,blockj to singleD blockAr pos;
+				var blockPos = (blocki*3) + blockj;
+				return blockPos;
 			}
-		};
+
+			var calculateValidationMatrix = function(sudokuMatrix) {
+				for (i=0; i<9; i++) {
+					_validationMatrix.rowi[i] = [];
+					for (j=0; j<9; j++) {
+						//initialize col array if not available.
+						if (!_validationMatrix.colj[j])
+							_validationMatrix.colj[j] = [];
+
+						var blockPos = getBlockPos(i,j);
+						//initialize block array if not available.
+						if (!_validationMatrix.blockij[blockPos])
+							_validationMatrix.blockij[blockPos] = [];
+						
+						var data = sudokuMatrix[i][j];
+						if (data >=1 && data <=9) {
+							_validationMatrix.rowi[i].push(data);
+							_validationMatrix.colj[j].push(data);
+							_validationMatrix.blockij[blockPos].push(data);
+						}
+					}
+				}
+			};
+
+			var deleteDataFromValidationMatrix = function(row, col, val) {
+				var index;
+
+				if (isNaN(val))
+					return;
+
+				if (_validationMatrix.rowi[row]) {
+					index = _validationMatrix.rowi[row].indexOf(val);
+					if (index > -1) {
+						_validationMatrix.rowi[row].splice(index,1);
+					}
+				}
+
+				if (_validationMatrix.colj[col]) {
+					index = _validationMatrix.colj[col].indexOf(val);
+					if (index > -1) {
+						_validationMatrix.colj[col].splice(index,1);
+					}
+				}
+
+				var blockPos = getBlockPos(row,col);
+
+				if (_validationMatrix.blockij[blockPos]) {
+					index = _validationMatrix.blockij[blockPos].indexOf(val);
+					if (index > -1) {
+						_validationMatrix.blockij[blockPos].splice(index,1);
+					}
+				}
+			};
+
+			var addDataToValidationMatrix = function(row, col, val) {
+
+				if (isNaN(val))
+					return;
+				//update row array
+				if (!_validationMatrix.rowi[row])
+					_validationMatrix.rowi[row] = [];
+				_validationMatrix.rowi[row].push(val);
+
+				//update col array
+				if (!_validationMatrix.colj[col])
+					_validationMatrix.colj[col] = [];
+				_validationMatrix.colj[col].push(val);
+
+				//update block array
+				if (!_validationMatrix.blockij[getBlockPos(row,col)])
+					_validationMatrix.blockij[getBlockPos(row,col)] = [];
+				_validationMatrix.blockij[getBlockPos(row,col)].push(val);
+			};
+
+			//Public Game Methods.
+
+			this.createBoardMatrix =  function() {
+				var matrix = generateBoardMatrix();
+				calculateValidationMatrix(matrix);
+				return matrix;
+			};
+
+			this.validate = function(row, col, val, oldval) {
+				deleteDataFromValidationMatrix(row,col,oldval);
+				var rowCheck = _validationMatrix.rowi[row].indexOf(val);
+				var colCheck = _validationMatrix.colj[col].indexOf(val)
+				var blockCheck = _validationMatrix.blockij[getBlockPos(row,col)].indexOf(val);
+
+				addDataToValidationMatrix(row,col,val);
+
+				if (rowCheck == -1 && colCheck == -1 && blockCheck == -1) {
+					return true;
+				} else 
+					return {
+						'rowFail': rowCheck != -1,
+						'colFail': colCheck != -1,
+						'blockFail': blockCheck != -1
+					};
+			}
+		}
 
 		this.getGameInstance = function() {
 			if (!_gameObj) {
@@ -59,17 +171,15 @@ var Sudoku = (function($) {
 			} else
 				return _gameObj; 
 		};
-	}
 
-	SudokuGameUI.prototype = {
-		constructBoardUI: function() {
+		this.constructBoardUI = function() {
 			var gameObj = this.getGameInstance();
 
-			var cellData = gameObj.generateBoardMatrix();
+			var cellData = gameObj.createBoardMatrix();
 
-			var table = $('<table></table>').addClass("fit");
-			for(var i=0; i<9; i++){
-			    var row = $('<tr></tr>');
+			var table = $('<table id="sudokuTable"></table>').addClass("fit");
+			for(var i=0; i<9; i++) {
+			    var rowTr = $('<tr></tr>');
 			    for (var j=0; j<9; j++) {
 			    	var data = cellData[i][j];
 			    	var input = $('<input type="text"/>').attr({
@@ -80,11 +190,15 @@ var Sudoku = (function($) {
 			    	if (data >= 1 && data <=9) {
 			    		input.attr({
 			    			'value' : data,
-			    			'disabled': true
-			    		});
+			    			'disabled': true,
+			    		}).addClass("disabled-content");
 			    	}
 
+			    	input.data("index", {row:i, col:j});
+			    	input.data("error-counter",0);
+
 			    	input.keyup(function(){
+			    		var oldval = $(this).data("oldval");
 			    		var val = $(this).val();
 			    		var preval;
 
@@ -99,8 +213,44 @@ var Sudoku = (function($) {
 
 			    		if (preval && val == '')
 			    			this.value = preval;
-			    		else 
-			    			this.value = val;
+
+			    		var index = $(this).data("index");
+
+			    		var prevFailData = {
+			    			rowFail: $(this).data("row-error"),
+			    			colFail: $(this).data("col-error"),
+			    			blockFail: $(this).data("block-error")
+			    		};
+
+			    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
+
+			    		if (validate !== true) {
+			    			var rowFailData = validate.rowFail;
+			    			var colFailData = validate.colFail;
+			    			var blockFailData = validate.blockFail;
+
+			    			$(this).data("row-error",rowFailData);
+			    			$(this).data("col-error",colFailData);
+			    			$(this).data("block-error",blockFailData);
+
+			    			var rowVal = (rowFailData)?index.row:-1;
+			    			var colVal = (colFailData)?index.col:-1;
+			    			var blocki = Math.floor(index.row / 3);
+			    			var blockj = Math.floor(index.col / 3);
+							var blockPos = (blocki*3) + blockj;
+			    			var blockVal = (blockFailData) ? blockPos :-1;
+			    			_gameUI.highlightErrorsUI(rowVal, colVal, blockVal);
+			    		} else {
+			    			var rowVal = (prevFailData.rowFail) ? index.row : -1;
+			    			var colVal = (prevFailData.colFail) ? index.col : -1;
+			    			var blocki = Math.floor(index.row / 3);
+			    			var blockj = Math.floor(index.col / 3);
+							var blockPos = (blocki*3) + blockj;
+							var blockVal = (prevFailData.blockFail) ? blockPos : -1;
+			    			_gameUI.unhighlightErrorsUI(rowVal, colVal, blockVal);
+			    		}
+			    		$(this).data("oldval",val);
+			    		this.value = val;	
 			    	});
 
 			    	var td = $('<td>');
@@ -113,13 +263,97 @@ var Sudoku = (function($) {
 					} else {
 						input = input.addClass("bg-color1");
 					}
-			    	row.append(td.append(input));
+			    	rowTr.append(td.append(input));
 			    }
-			    table.append(row);
+			    table.append(rowTr);
 			}
 			return table;
-		}
-	};
+		};
+
+		this.highlightErrorsUI = function(rowIndex, colIndex, blockIndex) {
+			var cell,x,y,row,col;
+			var table = $('#sudokuTable')[0];
+			for (var j=0;j<9;j++) {
+				if (rowIndex != -1) {
+					cell = table.rows[rowIndex].cells[j];
+					var input = $(cell).find("input");
+					var errCnt = input.data("error-counter");
+					input.addClass("error-bg-color").data("error-counter",++errCnt);
+				}
+				if (colIndex != -1) {
+					cell = table.rows[j].cells[colIndex];
+					var input = $(cell).find("input");
+					var errCnt = input.data("error-counter");
+					input.addClass("error-bg-color").data("error-counter",++errCnt);
+				}
+			}
+			if (blockIndex != -1) {
+				x = Math.floor(blockIndex / 3) * 3;
+				y = Math.floor(blockIndex % 3) * 3;
+				for (i=0;i<3;i++) {
+					row = x + i;
+					for (j=0;j<3;j++) {
+						col = y + j;
+						cell = table.rows[row].cells[col];
+						var input = $(cell).find("input");
+						var errCnt = input.data("error-counter");
+						input.addClass("error-bg-color").data("error-counter",++errCnt);
+					}
+				}
+			}
+		};
+
+		this.unhighlightErrorsUI = function(rowIndex, colIndex, blockIndex) {
+			var cell,x,y,row,col;
+			var table = $('#sudokuTable')[0];
+			for (var j=0;j<9;j++) {
+				if (rowIndex != -1) {
+					cell = table.rows[rowIndex].cells[j];
+					var input = $(cell).find("input");
+					var errCnt = input.data("error-counter");
+					if (errCnt > 0) {
+						--errCnt;
+						input.data("error-counter", errCnt);
+						if (errCnt == 0) {
+							input.removeClass("error-bg-color");	
+						}
+					}
+				}
+				if (colIndex != -1) {
+					cell = table.rows[j].cells[colIndex];
+					var input = $(cell).find("input");
+					var errCnt = input.data("error-counter");
+					if (errCnt > 0) {
+						--errCnt;
+						input.data("error-counter", errCnt);
+						if (errCnt == 0) {
+							input.removeClass("error-bg-color");	
+						}	
+					}
+				}
+			}
+			if (blockIndex != -1) {
+				x = Math.floor(blockIndex / 3) * 3;
+				y = Math.floor(blockIndex % 3) * 3;
+				for (i=0;i<3;i++) {
+					row = x + i;
+					for (j=0;j<3;j++) {
+						col = y + j;
+						cell = table.rows[row].cells[col];
+						var input = $(cell).find("input");
+						var errCnt = input.data("error-counter");
+						if (errCnt > 0) {
+							--errCnt;
+							input.data("error-counter", errCnt);
+							if (errCnt == 0) {
+								input.removeClass("error-bg-color");	
+							}	
+						}
+					}
+				}
+			}
+		};
+	}
 
 	return {
 		getInstance: function () {
@@ -129,5 +363,4 @@ var Sudoku = (function($) {
     		return _instance;
 		}
 	}
-
 }) (jQuery);
