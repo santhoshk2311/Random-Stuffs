@@ -35,3 +35,15 @@ Addtional Features:
 ===================
 1) Solve
 2) Board Generators based on difficulty level: Easy, Medium, Hard, Evil
+
+
+UI Layout:
+==========
+1) 3 column layout with center column having sudoku board.
+2) 1st Column and 3rd Column will be slidable divs.
+3) 1st Column has options below:
+	New Game (With Difficultly Levels), Load Game, Save Game, Restart Game
+4) 2nd Column has options below:
+	Clear, Undo, Solve, Validate
+
+Added arrow based movement across board.

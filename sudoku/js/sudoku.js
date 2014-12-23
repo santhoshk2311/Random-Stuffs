@@ -27,6 +27,8 @@ var Sudoku = (function($) {
 
 	function SudokuGameUI() {
 		var _gameObj;
+		var lastSelectedCellObj;
+		var lastSelectedFailObj;
 
 		/*
 		 *	Sudoku Game Class. Defined inside UI class.
@@ -296,6 +298,229 @@ var Sudoku = (function($) {
 			}
 		};
 
+		var attachEventsToCell = function(input,gameObj) {
+
+			//Attaching events to handle arrow keys.
+			input.keydown(function(e) {
+
+				var indexObj = $(this).data("index");
+				var index;
+				var currentTd, currentTr, nextTd, nextTr,input,nextInput;
+
+				if (!indexObj)
+					return;
+
+
+			    switch(e.which) {
+			        case 37: // left
+			        	currentTd = $(this).parent();
+			        	input = $(this);
+			        	input.focus();
+			        	
+			        	if(currentTd.is(':first-child')) {
+						    return;
+						}
+						nextTd = currentTd.prev();
+						nextInput = nextTd.find("input");
+
+						while (nextInput.prop("disabled")) {
+							nextTd = nextTd.prev();
+							nextInput = nextTd.find("input");
+						}
+						nextInput.focus();
+			        break;
+
+			        case 38: // up
+			        	currentTd = $(this).parent();
+			        	currentTr = currentTd.parent();
+			        	index = currentTd.index();
+			        	input = $(this);
+			        	input.focus();
+
+			        	if(currentTr.is(':first-child')) {
+						    return;
+						}
+						nextTr = currentTr.prev();
+						nextTd = nextTr.find("td").eq(index);
+						nextInput = nextTd.find("input");
+
+						while (nextInput.prop("disabled")) {
+							nextTr = nextTr.prev();
+							nextTd = nextTr.find("td").eq(index);
+							nextInput = nextTd.find("input");
+						}
+						nextInput.focus();
+			        break;
+
+			        case 39: // right
+			        	currentTd = $(this).parent();
+			        	input = $(this);
+			        	input.focus();
+
+			        	if(currentTd.is(':last-child')) {
+						    return;
+						}
+						nextTd = currentTd.next();
+						nextInput = nextTd.find("input");
+
+						while (nextInput.prop("disabled")) {
+							nextTd = nextTd.next();
+							nextInput = nextTd.find("input");
+						}
+						nextInput.focus();
+			        break;
+
+			        case 40: // down
+			        	currentTd = $(this).parent();
+			        	currentTr = currentTd.parent();
+			        	index = currentTd.index();
+			        	input = $(this);
+			        	input.focus();
+
+			        	if(currentTr.is(':last-child')) {
+						    return;
+						}
+						nextTr = currentTr.next();
+						nextTd = nextTr.find("td").eq(index);
+						nextInput = nextTd.find("input");
+
+						while (nextInput.prop("disabled")) {
+							nextTr = nextTr.next();
+							nextTd = nextTr.find("td").eq(index);
+							nextInput = nextTd.find("input");
+						}
+						nextInput.focus();
+			        break;
+
+			        default: return; // exit this handler for other keys
+			    }
+			    e.preventDefault(); // prevent the default action (scroll / move caret)
+			});
+
+			//Attaching Key UP event.
+			input.keyup(function(){
+	    		var oldval = $(this).data("oldval");
+	    		var val = $(this).val();
+	    		var preval;
+	    		var rowFailData, colFailData, blockFailData;
+	    		var index = $(this).data("index");
+
+	    		if (val.length == 2) {
+	    			preval = val[0];
+	    			val = val[1];
+	    		} 
+
+	    		if (!$.isNumeric(val) || val == 0) {
+	    			val = '';
+	    		}
+
+	    		if (preval && val == '')
+	    			this.value = preval;
+
+	    		if (oldval == val) {
+	    			this.value = val;
+	    			return;
+	    		}
+
+	    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
+
+	    		if (validate !== true) {
+
+	    			// If we enter 2 wrong values continously. Unhighlight first highligted rows/cols/blocks.
+	    			if (lastSelectedCellObj == index && lastSelectedFailObj) {
+	    				rowFailData = lastSelectedFailObj.rowFail;
+		    			colFailData = lastSelectedFailObj.colFail;
+		    			blockFailData = lastSelectedFailObj.blockFail;
+
+		    			var rowVal = (rowFailData)?index.row:-1;
+		    			var colVal = (colFailData)?index.col:-1;
+		    			var blocki = Math.floor(index.row / 3);
+		    			var blockj = Math.floor(index.col / 3);
+						var blockPos = (blocki*3) + blockj;
+		    			var blockVal = (blockFailData) ? blockPos :-1;
+
+		    			highlightErrors(rowVal, colVal, blockVal, false);
+	    			}
+
+	    			rowFailData = validate.rowFail;
+	    			colFailData = validate.colFail;
+	    			blockFailData = validate.blockFail;
+	    			
+	    			$(this).data("row-error",rowFailData);
+	    			$(this).data("col-error",colFailData);
+	    			$(this).data("block-error",blockFailData);
+
+	    			var rowVal = (rowFailData)?index.row:-1;
+	    			var colVal = (colFailData)?index.col:-1;
+	    			var blocki = Math.floor(index.row / 3);
+	    			var blockj = Math.floor(index.col / 3);
+					var blockPos = (blocki*3) + blockj;
+	    			var blockVal = (blockFailData) ? blockPos :-1;
+
+	    			highlightErrors(rowVal, colVal, blockVal, true);
+
+	    			lastSelectedFailObj = validate;
+
+	    			var table = $('#sudokuTable')[0];
+
+	    			for (var k=0; k<9; k++) {
+	    				if (rowFailData) {
+	    					if (index.col != k) {
+		    					cell = table.rows[index.row].cells[k];
+								var inputNode = $(cell).find("input");
+		    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+									inputNode.data("row-error", true);
+								}
+							}
+	    				}
+	    				if (colFailData) {
+	    					if (index.row != k) {
+	    						cell = table.rows[k].cells[index.col];
+								var inputNode = $(cell).find("input");
+		    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+									inputNode.data("col-error", true);
+								}
+	    					}
+	    				}
+	    				if (blockVal != -1) {
+							x = Math.floor(blockVal / 3) * 3;
+							y = Math.floor(blockVal % 3) * 3;
+							for (var i=0;i<3;i++) {
+								row = x + i;
+								for (var j=0;j<3;j++) {
+									col = y + j;
+									if (index.row == row && index.col == col) {
+										continue;
+									}
+									cell = table.rows[row].cells[col];
+									var inputNode = $(cell).find("input");
+			    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
+										inputNode.data("block-error", true);
+									}
+								}
+							}
+						}
+	    			}
+
+	    		} else {
+	    			rowFailData = $(this).data("row-error");
+	    			colFailData = $(this).data("col-error");
+	    			blockFailData = $(this).data("block-error");
+	    			var rowVal = (rowFailData) ? index.row : -1;
+	    			var colVal = (colFailData) ? index.col : -1;
+	    			var blocki = Math.floor(index.row / 3);
+	    			var blockj = Math.floor(index.col / 3);
+					var blockPos = (blocki*3) + blockj;
+					var blockVal = (blockFailData) ? blockPos : -1;
+	    			highlightErrors(rowVal, colVal, blockVal,false);
+	    		}
+	    		lastSelectedCellObj = index;
+	    		$(this).data("oldval",val);
+	    		$(this).data("val",val);
+	    		this.value = val;	
+	    	});
+		};
+
 		//Public UI Class Methods.
 
 		this.addTimer = function() {
@@ -309,8 +534,6 @@ var Sudoku = (function($) {
 		this.constructBoardUI = function() {
 			var gameObj = this.getGameUIInstance();
 			var cellData = gameObj.createBoardMatrix();
-			var lastSelectedCellObj;
-			var lastSelectedFailObj;
 
 			var table = $('<table id="sudokuTable"></table>').addClass("fit");
 			for(var i=0; i<9; i++) {
@@ -334,127 +557,7 @@ var Sudoku = (function($) {
 			    	input.data("index", {row:i, col:j});
 			    	input.data("error-counter",0);
 
-			    	input.keyup(function(){
-			    		var oldval = $(this).data("oldval");
-			    		var val = $(this).val();
-			    		var preval;
-			    		var rowFailData, colFailData, blockFailData;
-			    		var index = $(this).data("index");
-
-			    		if (val.length == 2) {
-			    			preval = val[0];
-			    			val = val[1];
-			    		} 
-
-			    		if (!$.isNumeric(val) || val == 0) {
-			    			val = '';
-			    		}
-
-			    		if (preval && val == '')
-			    			this.value = preval;
-
-			    		if (oldval == val) {
-			    			this.value = val;
-			    			return;
-			    		}
-
-			    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
-
-			    		if (validate !== true) {
-
-			    			// If we enter 2 wrong values continously. Unhighlight first highligted rows/cols/blocks.
-			    			if (lastSelectedCellObj == index && lastSelectedFailObj) {
-			    				rowFailData = lastSelectedFailObj.rowFail;
-				    			colFailData = lastSelectedFailObj.colFail;
-				    			blockFailData = lastSelectedFailObj.blockFail;
-
-				    			var rowVal = (rowFailData)?index.row:-1;
-				    			var colVal = (colFailData)?index.col:-1;
-				    			var blocki = Math.floor(index.row / 3);
-				    			var blockj = Math.floor(index.col / 3);
-								var blockPos = (blocki*3) + blockj;
-				    			var blockVal = (blockFailData) ? blockPos :-1;
-
-				    			highlightErrors(rowVal, colVal, blockVal, false);
-			    			}
-
-			    			rowFailData = validate.rowFail;
-			    			colFailData = validate.colFail;
-			    			blockFailData = validate.blockFail;
-			    			
-			    			$(this).data("row-error",rowFailData);
-			    			$(this).data("col-error",colFailData);
-			    			$(this).data("block-error",blockFailData);
-
-			    			var rowVal = (rowFailData)?index.row:-1;
-			    			var colVal = (colFailData)?index.col:-1;
-			    			var blocki = Math.floor(index.row / 3);
-			    			var blockj = Math.floor(index.col / 3);
-							var blockPos = (blocki*3) + blockj;
-			    			var blockVal = (blockFailData) ? blockPos :-1;
-
-			    			highlightErrors(rowVal, colVal, blockVal, true);
-
-			    			lastSelectedFailObj = validate;
-
-			    			var table = $('#sudokuTable')[0];
-
-			    			for (var k=0; k<9; k++) {
-			    				if (rowFailData) {
-			    					if (index.col != k) {
-				    					cell = table.rows[index.row].cells[k];
-										var inputNode = $(cell).find("input");
-				    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-											inputNode.data("row-error", true);
-										}
-									}
-			    				}
-			    				if (colFailData) {
-			    					if (index.row != k) {
-			    						cell = table.rows[k].cells[index.col];
-										var inputNode = $(cell).find("input");
-				    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-											inputNode.data("col-error", true);
-										}
-			    					}
-			    				}
-			    				if (blockVal != -1) {
-									x = Math.floor(blockVal / 3) * 3;
-									y = Math.floor(blockVal % 3) * 3;
-									for (var i=0;i<3;i++) {
-										row = x + i;
-										for (var j=0;j<3;j++) {
-											col = y + j;
-											if (index.row == row && index.col == col) {
-												continue;
-											}
-											cell = table.rows[row].cells[col];
-											var inputNode = $(cell).find("input");
-					    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-												inputNode.data("block-error", true);
-											}
-										}
-									}
-								}
-			    			}
-
-			    		} else {
-			    			rowFailData = $(this).data("row-error");
-			    			colFailData = $(this).data("col-error");
-			    			blockFailData = $(this).data("block-error");
-			    			var rowVal = (rowFailData) ? index.row : -1;
-			    			var colVal = (colFailData) ? index.col : -1;
-			    			var blocki = Math.floor(index.row / 3);
-			    			var blockj = Math.floor(index.col / 3);
-							var blockPos = (blocki*3) + blockj;
-							var blockVal = (blockFailData) ? blockPos : -1;
-			    			highlightErrors(rowVal, colVal, blockVal,false);
-			    		}
-			    		lastSelectedCellObj = index;
-			    		$(this).data("oldval",val);
-			    		$(this).data("val",val);
-			    		this.value = val;	
-			    	});
+			    	attachEventsToCell(input,gameObj);
 
 			    	var td = $('<td>');
 
