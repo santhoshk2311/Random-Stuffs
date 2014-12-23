@@ -3,20 +3,32 @@
     <head>
         <title> My Sudoku</title>
         <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
         <script src="js/sudoku.js"></script>
     </head>
 	<body>
-		<div class="header"><h1>Sudoku</h1></div>	
-		<div id="left" class="left-container">Left Panel</div>
-		<div id="center" class="container-div"></div>
-		<div id="right" class="right-container">Right Panel</div>
-		<br style="clear: left;"/>
+		<div class="header"><h1>Sudoku</h1></div>
+		<div class ="container-div">
+			<div id="top-menu" class="top-menu-div">
+				<time title="Click To Pause" class="timer">00:00:00</time>
+				<div id="difficulty" class="difficulty-div"></div>
+			</div>
+			<div id="center" class="board-div"></div>
+			<div id="bottom-menu" class="bottom-menu-div"/>
+				<button class="undo" disabled="">Undo</button>
+				<button class="restart" title="restart current game">Restart</button>
+				<button class="new" title="play a new game">New Game</button>
+				<button class="load" title="Load Game"><b></b>Load</button>
+				<button class="save" title="Save Game"><b></b>Save</button>
+			</div>
+			<!-- <div class="menu-div"> -->
+		</div>
 		<script type="text/javascript">
 			$( document ).ready( function() {
-				var sudoku = Sudoku.getInstance();
-				var table = sudoku.getBoard();
-				$('#center').append(table);
+				var sudokuUI = Sudoku.getInstance();
+				sudokuUI.drawUI();
 			});
 		</script>
 	</body>
