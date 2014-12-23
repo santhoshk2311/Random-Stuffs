@@ -82,11 +82,12 @@ table {
 		border: 2px solid #a1a1a1;
 		border-radius: 8px;
 		input {
-			width: 90%;
+			width: 100%;
 			position:absolute;
+			border: none;
 		    top:0;
 		    bottom:0;
-		    height: 95%;
+		    height: 100%;
 		    left:0;
 		    right:0;
 		    text-align: center;

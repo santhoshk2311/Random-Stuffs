@@ -309,6 +309,8 @@ var Sudoku = (function($) {
 		this.constructBoardUI = function() {
 			var gameObj = this.getGameUIInstance();
 			var cellData = gameObj.createBoardMatrix();
+			var lastSelectedCellObj;
+			var lastSelectedFailObj;
 
 			var table = $('<table id="sudokuTable"></table>').addClass("fit");
 			for(var i=0; i<9; i++) {
@@ -331,14 +333,13 @@ var Sudoku = (function($) {
 
 			    	input.data("index", {row:i, col:j});
 			    	input.data("error-counter",0);
-			    	input.keyup()
 
 			    	input.keyup(function(){
 			    		var oldval = $(this).data("oldval");
 			    		var val = $(this).val();
-
 			    		var preval;
 			    		var rowFailData, colFailData, blockFailData;
+			    		var index = $(this).data("index");
 
 			    		if (val.length == 2) {
 			    			preval = val[0];
@@ -357,11 +358,26 @@ var Sudoku = (function($) {
 			    			return;
 			    		}
 
-			    		var index = $(this).data("index");
-
 			    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
 
 			    		if (validate !== true) {
+
+			    			// If we enter 2 wrong values continously. Unhighlight first highligted rows/cols/blocks.
+			    			if (lastSelectedCellObj == index && lastSelectedFailObj) {
+			    				rowFailData = lastSelectedFailObj.rowFail;
+				    			colFailData = lastSelectedFailObj.colFail;
+				    			blockFailData = lastSelectedFailObj.blockFail;
+
+				    			var rowVal = (rowFailData)?index.row:-1;
+				    			var colVal = (colFailData)?index.col:-1;
+				    			var blocki = Math.floor(index.row / 3);
+				    			var blockj = Math.floor(index.col / 3);
+								var blockPos = (blocki*3) + blockj;
+				    			var blockVal = (blockFailData) ? blockPos :-1;
+
+				    			highlightErrors(rowVal, colVal, blockVal, false);
+			    			}
+
 			    			rowFailData = validate.rowFail;
 			    			colFailData = validate.colFail;
 			    			blockFailData = validate.blockFail;
@@ -376,7 +392,10 @@ var Sudoku = (function($) {
 			    			var blockj = Math.floor(index.col / 3);
 							var blockPos = (blocki*3) + blockj;
 			    			var blockVal = (blockFailData) ? blockPos :-1;
+
 			    			highlightErrors(rowVal, colVal, blockVal, true);
+
+			    			lastSelectedFailObj = validate;
 
 			    			var table = $('#sudokuTable')[0];
 
@@ -431,6 +450,7 @@ var Sudoku = (function($) {
 							var blockVal = (blockFailData) ? blockPos : -1;
 			    			highlightErrors(rowVal, colVal, blockVal,false);
 			    		}
+			    		lastSelectedCellObj = index;
 			    		$(this).data("oldval",val);
 			    		$(this).data("val",val);
 			    		this.value = val;	
