@@ -1,8 +1,10 @@
 Rules of the Game:
 ==================
 1. Board is 9*9 matrix.
-2. Board is divided into 9 small matrix (3*3) which will be called "Blocks".
+2. Board is divided into 9 small matrix (3*3) which will be called "Blocks".has Sudoku UI Class
 3. Each square in 9*9 matrix takes values from 1 to 9.
+
+Class Sudoku
 4. Game is over when:
 	4.1. All square is filled with number 1 to 9.
 	4.2. Numbers must be unique per row.
@@ -13,12 +15,11 @@ Rules of the Game:
 Technologies Used:
 ==================
 1) Jquery Core.
-2) Sass CSS pre-processor.
+2) Sass CSS pre-processor. First timer with this tool.
 
 
 Features of the Game:
 =====================
-
 1) New Game Button - On Clicking, new game will be generated based on the difficulty type.
 2) Restart Game Button - On Clicking, the same game will get restarted.
 3) Solve Game Button - On Clicking, it solves the puzzle by filling the all the values in unfilled cells.
@@ -40,24 +41,51 @@ Addtional Features that can be added in future:
 2) Logic in assigning diffculty level to the puzzle can be improved. I read lot of publications on that. 
 	Time did not permit me to implement it.
 
+UI Layout Thoughts:
+===================
+1) When choosing the layout, i decided to go with placing the board vertically center aligned since UI should be mobile friendly
+2) Other options are placed above and below the board and not on the sides intentionally for the same reason.
+3) Wanted the UI to be simple and straight forward rather confusing user with too many options and flashy html5/css effects.
 
-Mobile UI
-=========
+Class Design:
+=============
+Class Sudoku {
+	// Singleton Class
+	// has instance of Sudoku UI Class.
+} 
+
+Class SudokuGameUI {
+	// has instance of Game Class.
+	// has instance of Timer Class to show timer.
+}
+
+Class Game {
+	// uses Solver Utility Class to generate a solved sudoku matrix.
+	// then picks up randomly the numbers from the solved matrix to get playable matrix.
+}
+
+Class Solver {
+	// Sudoku solver utility class.
+}
+
+Class Timer {
+	// TImer utility class.
+}
+
+
+Mobile UI Caveats:
+==================
 I have customized css for styling the UI in mobile. This can be improved further.
 I have not tested 100% in mobile. Tried with iphone/nexus. Looks good but can be improved.
 
 General Notes:
 ==============
 1) Used external jquery plugin for load mask when pausing the game.
-2) Usec http://www.sudoku-solutions.com/ to verify the board generator.
-
-You can verify the 
-
+2) Used http://www.sudoku-solutions.com/ to verify the board generator.
 
 To Do:
 ======
-
 1) Write comments for solver.js explaining the code.
-3) Update README file with all the details.
+2) hosted UI code for mobile
 
 
