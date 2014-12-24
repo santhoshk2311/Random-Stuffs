@@ -1,4 +1,11 @@
-@media only screen and (max-width: 468px) {
+@media only screen and (max-device-width: 768px) {
+  h1 {
+    font-size: 9em; }
+
+  input:disabled {
+    -webkit-text-fill-color: black;
+    -webkit-opacity: 1; }
+
   .fit {
     table-layout: fixed;
     width: 100%; }
@@ -11,6 +18,20 @@
 
   .top-menu-div {
     padding: 0 0 2em 0;
-    margin: 0 auto; } }
+    width: 100%;
+    margin: 0 auto; }
+
+  ul li {
+    font-size: 2.5em; }
+
+  .difficulty-div {
+    width: 80%; }
+
+  .timer {
+    font-size: 2.8em; }
+
+  .difficulty-div {
+    margin: 2em 0 0.5em 1em;
+    width: 50%; } }
 
 /*# sourceMappingURL=small-devices.css.map */
