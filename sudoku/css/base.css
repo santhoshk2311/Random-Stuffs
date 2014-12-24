@@ -31,7 +31,7 @@ body {
 
 .bottom-menu-div {
   padding: 1em 0 1em 2.5em;
-  width: 28%;
+  width: 20%;
   border-radius: 80px;
   margin: 0 auto;
   margin-bottom: 2em;
@@ -43,7 +43,6 @@ button {
   vertical-align: middle;
   background: none;
   border: none;
-  box-shadow: 0 0 10px #000;
   border-radius: 8px;
   display: inline-block; }
 
@@ -90,7 +89,7 @@ table {
       text-align: center;
       font-size: 35px;
       font-style: italic;
-      color: #B43004; }
+      color: #0000FF; }
 
 td:after {
   content: '';
