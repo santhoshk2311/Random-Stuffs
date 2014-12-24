@@ -79,6 +79,11 @@ function Game() {
 	 * Function that calculates _validationMatrix after new board is generated.
 	 */
 	var calculateValidationMatrix = function(sudokuMatrix) {
+		_validationMatrix = {
+			rowi:[],
+			colj:[],
+			blockij:[]
+		};
 		var blockPos, data;
 		for (i=0; i<9; i++) {
 			_validationMatrix.rowi[i] = [];

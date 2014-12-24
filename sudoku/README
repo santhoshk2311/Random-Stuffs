@@ -83,9 +83,4 @@ General Notes:
 1) Used external jquery plugin for load mask when pausing the game.
 2) Used http://www.sudoku-solutions.com/ to verify the board generator.
 
-To Do:
-======
-1) Write comments for solver.js explaining the code.
-2) hosted UI code for mobile
-
 
