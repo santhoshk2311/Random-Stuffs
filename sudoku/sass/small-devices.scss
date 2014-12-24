@@ -1,0 +1,48 @@
+@media only screen and (max-device-width: 768px) {
+
+	h1 {
+		font-size: 9em;
+	}
+
+	input:disabled{
+       -webkit-text-fill-color: rgba(0, 0, 0, 1);
+       -webkit-opacity: 1; 
+    }
+    
+    .fit {
+	    table-layout: fixed;
+	    width: 100%;
+	}
+
+	.bottom-menu-div {
+		width: 50%;
+	}
+
+	button {
+		font-size: 34px;
+	}
+
+	.top-menu-div {
+		padding: 0 0 2em 0;
+		width: 100%;
+		margin: 0 auto;
+	}
+
+	ul li {
+		font-size: 2.5em;
+	}
+
+	.difficulty-div {
+		width: 80%;
+	}
+
+	.timer {
+  		font-size: 2.8em;
+  	}
+	
+  	.difficulty-div {
+  		margin: 2em 0 0.5em 1em;
+  		width: 50%;
+  	}
+} 
+

@@ -1,0 +1,16 @@
+@media only screen and (max-width: 468px) {
+  .fit {
+    table-layout: fixed;
+    width: 100%; }
+
+  .bottom-menu-div {
+    width: 50%; }
+
+  button {
+    font-size: 34px; }
+
+  .top-menu-div {
+    padding: 0 0 2em 0;
+    margin: 0 auto; } }
+
+/*# sourceMappingURL=small-devices.css.map */
