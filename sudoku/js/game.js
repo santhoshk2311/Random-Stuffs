@@ -6,6 +6,7 @@ function Game() {
 	//Private Game Properties
 	var _sudokuMatrix;
 	var _solvedMatrix;
+	var _difficultyLevel=0;
 	var _validationMatrix = {
 		rowi:[],
 		colj:[],
@@ -27,8 +28,16 @@ function Game() {
 	 */
 	function pickRandomFromMatrix(solvedMatrix) {
 		var randomNumber,row, col,i=0;
+		var editableNodeCount;
+		if (_difficultyLevel == 0) {
+			editableNodeCount = 42;
+		} else if (_difficultyLevel == 1) {
+			editableNodeCount = 45;
+		} else if (_difficultyLevel == 2) {
+			editableNodeCount = 50;
+		}
 
-		while (i<50) {
+		while (i < editableNodeCount) {
 			randomNumber = getRandomInt(0,80);
 			row = Math.floor(randomNumber/9);
 			col = Math.floor(randomNumber%9);
@@ -151,6 +160,20 @@ function Game() {
 	};
 
 	//Public Game Class Methods.
+
+	/*
+	 * Function sets game difficulty level.
+	 */
+	this.setDifficultyLevel = function(difficultyLevel) {
+		_difficultyLevel = difficultyLevel;
+	};
+
+	/*
+	 * Function returns game difficulty level.
+	 */
+	this.getDifficultyLevel = function() {
+		return _difficultyLevel;
+	};
 
 	/*
 	 * Function returns solved matrix.

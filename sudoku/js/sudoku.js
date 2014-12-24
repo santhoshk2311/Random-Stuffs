@@ -32,6 +32,7 @@ var Sudoku = (function($) {
 		var _lastSelectedFailObj; // Stores last failed cell obj.
 		var _timerObj; // Stores id for the running timer.
 		var _timerPausedFlag = false;
+		var _difficultyLevel = 0;
 
 		// Private UI Class methods.
 
@@ -235,6 +236,27 @@ var Sudoku = (function($) {
  		 */
 		var attachEvents = function(input,gameObj,gameUIObj) {
 
+			//Bind event for easy button.
+			$("#easy").unbind();
+			$("#easy").click(function() {
+				gameUIObj.setDifficultyLevel(0);
+				gameUIObj.restartGame(true);
+			});
+
+			//Bind event for easy button.
+			$("#medium").unbind();
+			$("#medium").click(function() {
+				gameUIObj.setDifficultyLevel(1);
+				gameUIObj.restartGame(true);
+			});
+
+			//Bind event for easy button.
+			$("#hard").unbind();
+			$("#hard").click(function() {
+				gameUIObj.setDifficultyLevel(2);
+				gameUIObj.restartGame(true);
+			});
+
 			//Bind event for Restart Game Button.
 			$(".restart").unbind();
 			$(".restart").click(function() {
@@ -259,10 +281,12 @@ var Sudoku = (function($) {
 				if (!_timerPausedFlag) {
 					_timerPausedFlag = true;
 					_timerObj.pauseTimer();
+					$("#center").mask("Game Paused");
 					
 				} else {
 					_timerPausedFlag = false;
 					_timerObj.runTimer();
+					$("#center").unmask();
 				}
 			});
 
@@ -400,6 +424,24 @@ var Sudoku = (function($) {
 	    	});
 		};
 
+		var highlightDifficultyLevel = function(_difficultyLevel) {
+			if (_difficultyLevel == 0) {
+				$('#medium').removeClass('buttons_hover');
+				$('#hard').removeClass('buttons_hover');
+				$('#easy').addClass('buttons_hover');
+
+			} else if (_difficultyLevel == 1) {
+				$('#easy').removeClass('buttons_hover');
+				$('#hard').removeClass('buttons_hover');
+				$('#medium').addClass('buttons_hover');
+			} else if (_difficultyLevel == 2) {
+				$('#easy').removeClass('buttons_hover');
+				$('#medium').removeClass('buttons_hover');
+				$('#hard').addClass('buttons_hover');
+			}
+
+		};
+
 		//Public UI Class Methods.
 
 		/*
@@ -462,18 +504,25 @@ var Sudoku = (function($) {
 			}
 		}
 
+		this.setDifficultyLevel = function(difficultyLevel) {
+			_difficultyLevel = difficultyLevel;
+		}
+
 		/*
 		 *  Public Function exposed to construct Sudoku Board UI with data.
 		 *  Returns TABLE DOM that will get added inside center container div.
  		 */
 		this.constructBoardUI = function(isNew) {
 			var gameObj = this.getGameUIInstance();
-			if (isNew)
+			if (isNew) {
+				gameObj.setDifficultyLevel(_difficultyLevel);
 				_currentSudokuMatrix = gameObj.createBoardMatrix();
-			else {
+			} else {
 				if (!_currentSudokuMatrix)
 					return false;
 			}
+
+			highlightDifficultyLevel(_difficultyLevel);
 
 			var data, input, td, blocki, blockj;
 

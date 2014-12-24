@@ -4,8 +4,10 @@
         <title> My Sudoku</title>
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+        <link rel="stylesheet" href="css/mask-plugin/jquery.loadmask.css" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+        <script src="js/mask-plugin/jquery.loadmask.js"></script>
         <script src="js/timer.js"></script>
         <script src="js/solver.js"></script>
         <script src="js/game.js"></script>
@@ -15,16 +17,21 @@
 		<div class="header"><h1>Sudoku</h1></div>
 		<div class ="container-div">
 			<div id="top-menu" class="top-menu-div">
-				<time id="timerDiv" title="Click To Pause" class="timer">00:00:00</time>
-				<div id="difficulty" class="difficulty-div"></div>
+				<time id="timerDiv" title="Click To Start/Pause" class="timer">00:00:00</time>
+				<div id="difficulty" class="difficulty-div">
+					<ul>
+						<li id="easy" class="buttons">Easy</li>
+						<li id="medium" class="medium buttons">Medium</li>
+						<li id="hard" class="buttons">Hard</li>
+					</ul>
+				</div>
 			</div>
 			<div id="center" class="board-div"></div>
 			<div id="bottom-menu" class="bottom-menu-div"/>
-				<button class="new" title="play a new game">New Game</button>
-				<button class="restart" title="restart current game">Restart</button>
-				<button class="solve" title="solve current game">Solve</button>
+				<button class="new buttons" title="play a new game">New Game</button>
+				<button class="restart buttons" title="restart current game">Restart</button>
+				<button class="solve buttons" title="solve current game">Solve</button>
 			</div>
-			<!-- <div class="menu-div"> -->
 		</div>
 		<script type="text/javascript">
 			$( document ).ready( function() {

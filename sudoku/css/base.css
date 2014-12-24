@@ -1,10 +1,22 @@
 * {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  outline: none; }
 
 body {
   padding-bottom: 1px;
   border: 1px solid transparent; }
+
+ul li {
+  display: inline-block;
+  border-radius: 80px;
+  cursor: default;
+  font-size: 1.2em;
+  width: 30%;
+  text-align: center; }
+
+.medium {
+  width: 37%; }
 
 .timer {
   float: right;
@@ -16,9 +28,23 @@ body {
   border-radius: 15px;
   background-color: #A8A8A8; }
 
+.buttons:hover {
+  background-color: #40E0D0; }
+
+.timer:hover {
+  background-color: #800000; }
+
+.buttons_hover {
+  background-color: #40E0D0; }
+
 .difficulty-div {
   float: left;
-  display: inline; }
+  display: inline-block;
+  padding: 0.5em 1em 0.5em 1em;
+  margin: 0.75em 0 0.5em 1em;
+  width: 50%;
+  border-radius: 80px;
+  box-shadow: 0 0 10px #000; }
 
 .container-div {
   background: url("../img/beige001.jpg");
@@ -30,7 +56,7 @@ body {
   margin: 0 auto; }
 
 .bottom-menu-div {
-  padding: 1em 0 1em 2.5em;
+  padding: 1em 0 1em 1em;
   width: 20%;
   border-radius: 80px;
   margin: 0 auto;
@@ -38,7 +64,7 @@ body {
   box-shadow: 0 0 10px #000; }
 
 button {
-  font-size: 14px;
+  font-size: 16px;
   padding: 4px 12px;
   vertical-align: middle;
   background: none;

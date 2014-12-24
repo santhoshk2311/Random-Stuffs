@@ -46,7 +46,18 @@ UI Layout:
 4) 2nd Column has options below:
 	Clear, Undo, Solve, Validate
 
+To Do:
+======
+
+1) Write comments for solver.js explaining the code.
+
+
+
 Added arrow based movement across board.
 
 Send this link for verification:
 http://www.sudoku-solutions.com/
+
+Used external jquery plugin for load mask.
+
+
