@@ -14,8 +14,8 @@ var Sudoku = (function($) {
 		_gameUI = new SudokuGameUI();
 		return {
 			drawUI: function() {
-				$('#center').append(_gameUI.constructBoardUI());
 				_gameUI.addTimer();
+				$('#center').append(_gameUI.constructBoardUI());
 			}
 		};
 	}
@@ -27,8 +27,60 @@ var Sudoku = (function($) {
 
 	function SudokuGameUI() {
 		var _gameObj;
-		var lastSelectedCellObj;
-		var lastSelectedFailObj;
+		var _lastSelectedCellObj; // Stores last selected cell obj.
+		var _lastSelectedFailObj; // Stores last failed cell obj.
+		var _timerObj; // Stores id for the running timer.
+		var _timerPausedFlag = false;
+
+
+		/*
+		 *  Timer Class.
+		 */
+		function Timer(timerCmp) {
+			var _seconds=0;
+			var _minutes=0;
+			var _hours=0;
+			var _timerId;
+			var publicTimerMethods;
+			var _timerCmp = timerCmp;
+
+			var addSecond = function() {
+				var textContent;
+				_seconds++;
+				if (_seconds >= 60) {
+					_seconds = 0;
+					_minutes++;
+			        if (_minutes >= 60) {
+			            _minutes = 0;
+			            _hours++;
+			        }
+				}
+				textContent = (_hours ? (_hours > 9 ? _hours : "0" + _hours) : "00") + 
+					":" + (_minutes ? (_minutes > 9 ? _minutes : "0" + _minutes) : "00") +
+					":" + (_seconds > 9 ? _seconds : "0" + _seconds);
+
+				_timerCmp.text(textContent);
+				publicTimerMethods.runTimer();	
+			};
+
+			publicTimerMethods = {	
+				runTimer: function() {
+					_timerId = setTimeout(addSecond, 1000);
+				},
+				pauseTimer: function() {
+					if (_timerId)
+						clearTimeout(_timerId);
+				},
+				stopTimer: function() {
+					if (_timerId) {
+						clearTimeout(_timerId);
+						_timerId = undefined;
+						_timerCmp = '';
+					}
+				}
+			};
+			return publicTimerMethods;
+		}
 
 		/*
 		 *	Sudoku Game Class. Defined inside UI class.
@@ -81,6 +133,7 @@ var Sudoku = (function($) {
 			 * Function that calculates _validationMatrix after new board is generated.
 			 */
 			var calculateValidationMatrix = function(sudokuMatrix) {
+				var blockPos, data;
 				for (i=0; i<9; i++) {
 					_validationMatrix.rowi[i] = [];
 					for (j=0; j<9; j++) {
@@ -88,12 +141,12 @@ var Sudoku = (function($) {
 						if (!_validationMatrix.colj[j])
 							_validationMatrix.colj[j] = [];
 
-						var blockPos = getBlockPos(i,j);
+						blockPos = getBlockPos(i,j);
 						//initialize block array if not available.
 						if (!_validationMatrix.blockij[blockPos])
 							_validationMatrix.blockij[blockPos] = [];
 						
-						var data = sudokuMatrix[i][j];
+						data = sudokuMatrix[i][j];
 						if (data >=1 && data <=9) {
 							_validationMatrix.rowi[i].push(data);
 							_validationMatrix.colj[j].push(data);
@@ -108,7 +161,6 @@ var Sudoku = (function($) {
 			 * user enters data in UI.
 			 */
 			var addDataToValidationMatrix = function(row, col, val) {
-
 				if (isNaN(val))
 					return;
 				//update row array
@@ -132,7 +184,7 @@ var Sudoku = (function($) {
 			 * user deletes data in UI.
 			 */
 			var deleteDataFromValidationMatrix = function(row, col, val) {
-				var index;
+				var index,blockPos;
 
 				if (isNaN(val))
 					return;
@@ -151,7 +203,7 @@ var Sudoku = (function($) {
 					}
 				}
 
-				var blockPos = getBlockPos(row,col);
+				blockPos = getBlockPos(row,col);
 
 				if (_validationMatrix.blockij[blockPos]) {
 					index = _validationMatrix.blockij[blockPos].indexOf(val);
@@ -223,10 +275,11 @@ var Sudoku = (function($) {
 		 *  Also increments error counter in the input node after showing error.
  		 */
 		var addErrorClass = function(inputNode) {
+			var errCnt;
 			if (!inputNode)
 				return;
 			else {
-				var errCnt = inputNode.data("error-counter");
+				errCnt = inputNode.data("error-counter");
 				return inputNode.addClass("error-bg-color").data("error-counter",++errCnt);
 			}
 		};
@@ -236,10 +289,11 @@ var Sudoku = (function($) {
 		 *  Also decrements error counter in the input node after removing error.
  		 */
 		var removeErrorClass = function(inputNode) {
+			var errCnt;
 			if (!inputNode)
 				return;
 			else {
-				var errCnt = inputNode.data("error-counter");
+				errCnt = inputNode.data("error-counter");
 				if (errCnt > 0) {
 					--errCnt;
 					inputNode.data("error-counter", errCnt);
@@ -298,11 +352,26 @@ var Sudoku = (function($) {
 			}
 		};
 
-		var attachEventsToCell = function(input,gameObj) {
+		var attachEvents = function(input,gameObj,gameUIObj) {
+			$(".restart").unbind();
+			$(".restart").click(function() {
+				gameUIObj.restartGame();
+			});
 
-			//Attaching events to handle arrow keys.
+			$("#timerDiv").unbind();
+			$("#timerDiv").click(function() {
+				if (!_timerPausedFlag) {
+					_timerPausedFlag = true;
+					_timerObj.pauseTimer();
+					
+				} else {
+					_timerPausedFlag = false;
+					_timerObj.runTimer();
+				}
+			});
+
+			// Attaching events to handle arrow keys.
 			input.keydown(function(e) {
-
 				var indexObj = $(this).data("index");
 				var index;
 				var currentTd, currentTr, nextTd, nextTr,input,nextInput;
@@ -310,13 +379,12 @@ var Sudoku = (function($) {
 				if (!indexObj)
 					return;
 
-
 			    switch(e.which) {
 			        case 37: // left
 			        	currentTd = $(this).parent();
 			        	input = $(this);
 			        	input.focus();
-			        	
+
 			        	if(currentTd.is(':first-child')) {
 						    return;
 						}
@@ -398,12 +466,16 @@ var Sudoku = (function($) {
 			});
 
 			//Attaching Key UP event.
+			//This is one of the key callback function.
 			input.keyup(function(){
 	    		var oldval = $(this).data("oldval");
 	    		var val = $(this).val();
 	    		var preval;
 	    		var rowFailData, colFailData, blockFailData;
 	    		var index = $(this).data("index");
+	    		var rowVal,colVal,blocki,blockj,blockPos,blockVal;
+	    		var table = $('#sudokuTable')[0];
+	    		var validate, inputNode;
 
 	    		if (val.length == 2) {
 	    			preval = val[0];
@@ -422,22 +494,22 @@ var Sudoku = (function($) {
 	    			return;
 	    		}
 
-	    		var validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
+	    		validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
 
 	    		if (validate !== true) {
 
 	    			// If we enter 2 wrong values continously. Unhighlight first highligted rows/cols/blocks.
-	    			if (lastSelectedCellObj == index && lastSelectedFailObj) {
-	    				rowFailData = lastSelectedFailObj.rowFail;
-		    			colFailData = lastSelectedFailObj.colFail;
-		    			blockFailData = lastSelectedFailObj.blockFail;
+	    			if (_lastSelectedCellObj == index && _lastSelectedFailObj) {
+	    				rowFailData = _lastSelectedFailObj.rowFail;
+		    			colFailData = _lastSelectedFailObj.colFail;
+		    			blockFailData = _lastSelectedFailObj.blockFail;
 
-		    			var rowVal = (rowFailData)?index.row:-1;
-		    			var colVal = (colFailData)?index.col:-1;
-		    			var blocki = Math.floor(index.row / 3);
-		    			var blockj = Math.floor(index.col / 3);
-						var blockPos = (blocki*3) + blockj;
-		    			var blockVal = (blockFailData) ? blockPos :-1;
+		    			rowVal = (rowFailData)?index.row:-1;
+		    			colVal = (colFailData)?index.col:-1;
+		    			blocki = Math.floor(index.row / 3);
+		    			blockj = Math.floor(index.col / 3);
+						blockPos = (blocki*3) + blockj;
+		    			blockVal = (blockFailData) ? blockPos :-1;
 
 		    			highlightErrors(rowVal, colVal, blockVal, false);
 	    			}
@@ -450,24 +522,22 @@ var Sudoku = (function($) {
 	    			$(this).data("col-error",colFailData);
 	    			$(this).data("block-error",blockFailData);
 
-	    			var rowVal = (rowFailData)?index.row:-1;
-	    			var colVal = (colFailData)?index.col:-1;
-	    			var blocki = Math.floor(index.row / 3);
-	    			var blockj = Math.floor(index.col / 3);
-					var blockPos = (blocki*3) + blockj;
-	    			var blockVal = (blockFailData) ? blockPos :-1;
+	    			rowVal = (rowFailData)?index.row:-1;
+	    			colVal = (colFailData)?index.col:-1;
+	    			blocki = Math.floor(index.row / 3);
+	    			blockj = Math.floor(index.col / 3);
+					blockPos = (blocki*3) + blockj;
+	    			blockVal = (blockFailData) ? blockPos :-1;
 
 	    			highlightErrors(rowVal, colVal, blockVal, true);
 
-	    			lastSelectedFailObj = validate;
-
-	    			var table = $('#sudokuTable')[0];
+	    			_lastSelectedFailObj = validate;
 
 	    			for (var k=0; k<9; k++) {
 	    				if (rowFailData) {
 	    					if (index.col != k) {
 		    					cell = table.rows[index.row].cells[k];
-								var inputNode = $(cell).find("input");
+								inputNode = $(cell).find("input");
 		    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
 									inputNode.data("row-error", true);
 								}
@@ -476,7 +546,7 @@ var Sudoku = (function($) {
 	    				if (colFailData) {
 	    					if (index.row != k) {
 	    						cell = table.rows[k].cells[index.col];
-								var inputNode = $(cell).find("input");
+								inputNode = $(cell).find("input");
 		    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
 									inputNode.data("col-error", true);
 								}
@@ -493,7 +563,7 @@ var Sudoku = (function($) {
 										continue;
 									}
 									cell = table.rows[row].cells[col];
-									var inputNode = $(cell).find("input");
+									inputNode = $(cell).find("input");
 			    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
 										inputNode.data("block-error", true);
 									}
@@ -506,15 +576,19 @@ var Sudoku = (function($) {
 	    			rowFailData = $(this).data("row-error");
 	    			colFailData = $(this).data("col-error");
 	    			blockFailData = $(this).data("block-error");
-	    			var rowVal = (rowFailData) ? index.row : -1;
-	    			var colVal = (colFailData) ? index.col : -1;
-	    			var blocki = Math.floor(index.row / 3);
-	    			var blockj = Math.floor(index.col / 3);
-					var blockPos = (blocki*3) + blockj;
-					var blockVal = (blockFailData) ? blockPos : -1;
+	    			rowVal = (rowFailData) ? index.row : -1;
+	    			colVal = (colFailData) ? index.col : -1;
+	    			blocki = Math.floor(index.row / 3);
+	    			blockj = Math.floor(index.col / 3);
+					blockPos = (blocki*3) + blockj;
+					blockVal = (blockFailData) ? blockPos : -1;
 	    			highlightErrors(rowVal, colVal, blockVal,false);
+	    			$(this).data("row-error",false);
+	    			$(this).data("col-error",false);
+	    			$(this).data("block-error",false);
+	    			_lastSelectedFailObj = {rowFailData:false, colFailData: false, rowFailData: false};
 	    		}
-	    		lastSelectedCellObj = index;
+	    		_lastSelectedCellObj = index;
 	    		$(this).data("oldval",val);
 	    		$(this).data("val",val);
 	    		this.value = val;	
@@ -523,10 +597,45 @@ var Sudoku = (function($) {
 
 		//Public UI Class Methods.
 
+		/*
+		 *  Public function to add Timer in UI.
+ 		 */
 		this.addTimer = function() {
-
+			if (_timerObj) {
+				_timerObj.pauseTimer();
+			}
+			_timerObj = new Timer($("#timerDiv"));
+			_timerObj.runTimer();
 		};
 
+		/*
+		 *  Public function to restart Timer in UI.
+ 		 */
+		this.restartTimer = function() {
+			if (_timerObj) {
+				_timerObj.pauseTimer();
+			}
+			_timerObj =new Timer($("#timerDiv"));
+			_timerObj.runTimer();
+		};
+
+		this.restartGame = function() {
+			//Stop old timer.
+			_timerObj.stopTimer();
+
+			// Clear state variables.
+			delete _lastSelectedCellObj;
+			delete _lastSelectedFailObj;
+			delete _timerObj;
+			delete _timerPausedFlag;
+
+			//Remove old table UI from main container.
+			$('#center').empty();
+
+			//draw UI again.
+			_gameUI.addTimer();
+			$('#center').append(_gameUI.constructBoardUI());
+		}
 		/*
 		 *  Public Function exposed to construct Sudoku Board UI with data.
 		 *  Returns TABLE DOM that will get added inside center container div.
@@ -534,13 +643,14 @@ var Sudoku = (function($) {
 		this.constructBoardUI = function() {
 			var gameObj = this.getGameUIInstance();
 			var cellData = gameObj.createBoardMatrix();
+			var data, input, td, blocki, blockj;
 
 			var table = $('<table id="sudokuTable"></table>').addClass("fit");
 			for(var i=0; i<9; i++) {
 			    var rowTr = $('<tr></tr>');
 			    for (var j=0; j<9; j++) {
-			    	var data = cellData[i][j];
-			    	var input = $('<input type="text"/>').attr({
+			    	data = cellData[i][j];
+			    	input = $('<input type="text"/>').attr({
 			    		'maxlength': "2",
 			    		'min': '1',
 			    		'max': '9'});
@@ -557,12 +667,12 @@ var Sudoku = (function($) {
 			    	input.data("index", {row:i, col:j});
 			    	input.data("error-counter",0);
 
-			    	attachEventsToCell(input,gameObj);
+			    	attachEvents(input,gameObj,_gameUI);
 
-			    	var td = $('<td>');
+			    	td = $('<td>');
 
-			    	var blocki = Math.floor(i / 3);
-			    	var blockj = Math.floor(j / 3);
+			    	blocki = Math.floor(i / 3);
+			    	blockj = Math.floor(j / 3);
 
 			    	if ((blocki + blockj) % 2 == 0) {
 			    		input = input.addClass("bg-color2");
