@@ -395,6 +395,12 @@ var Sudoku = (function($) {
 				$(".numeric").numeric();
 	    		var oldval = $(this).data("oldval");
 	    		var val = $(this).val();
+	    		val = parseInt(val,10);
+	    		if (val < 1 || val > 9) {
+	    			this.value = '';
+	    			return;
+	    		}
+	    			
 	    		var preval;
 	    		var index = $(this).data("index");
 
@@ -500,10 +506,12 @@ var Sudoku = (function($) {
 			for(var row = 0; row<9; row++) {
 			    for (var col = 0; col<9; col++) {
 			    	input = getInputNodeFromTable(row,col);
-			    	if (!input.data("disabled"))
-			    		input.val(solvedMatrix[row][col]);
+			    	input.prop('disabled', true);
+			    	input.val(solvedMatrix[row][col]);
+			    	input.removeClass("error-bg-color");
 			    }
 			}
+			_timerObj.stopTimer();
 		}
 
 		this.setDifficultyLevel = function(difficultyLevel) {
