@@ -391,6 +391,8 @@ var Sudoku = (function($) {
 			 * This function is called whenever user enters value in the node.
 			 */
 			input.keyup(function(){
+				//Filter text entered using this jquery plugin.
+				$(".numeric").numeric();
 	    		var oldval = $(this).data("oldval");
 	    		var val = $(this).val();
 	    		var preval;
@@ -534,7 +536,7 @@ var Sudoku = (function($) {
 
 			    for (var j=0; j<9; j++) {
 			    	data = _currentSudokuMatrix[i][j];
-			    	input = $('<input type="text"/>').attr({
+			    	input = $('<input class="numeric" type="text"/>').attr({
 			    		'maxlength': "2",
 			    		'min': '1',
 			    		'max': '9'});
