@@ -203,36 +203,4 @@ function Game() {
 		calculateValidationMatrix(matrix);
 		return matrix;
 	};
-
-	/*
-	 *  Public Function exposed to UI Class to validate user input.
-	 *  Returns true if success.
-	 *  Returns failure info like Row/Column/Block in an object.
-		 */
-	this.validate = function(row, col, val, oldval) {
-
-		// Delete old value first from validation matrix.
-		deleteDataFromValidationMatrix(row,col,oldval);
-
-		// Check if the new val is already availble in the
-		// specfic row/column/block validation matrix object.
-		var rowCheck = _validationMatrix.rowi[row].indexOf(val);
-		var colCheck = _validationMatrix.colj[col].indexOf(val)
-		var blockCheck = _validationMatrix.blockij[getBlockPos(row,col)].indexOf(val);
-
-		// Adds new value to validation matrix.
-		addDataToValidationMatrix(row,col,val);
-
-		if (rowCheck == -1 && colCheck == -1 && blockCheck == -1) {
-			// Validation success.
-			return true;
-		} else {
-			// Validation Failed.
-			return {
-				'rowFail': rowCheck != -1,
-				'colFail': colCheck != -1,
-				'blockFail': blockCheck != -1
-			};
-		}
-	}
 } // Game Class Ends.

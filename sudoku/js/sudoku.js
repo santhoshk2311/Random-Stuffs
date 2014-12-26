@@ -55,8 +55,7 @@ var Sudoku = (function($) {
 			if (!inputNode)
 				return;
 			else {
-				errCnt = inputNode.data("error-counter");
-				return inputNode.addClass("error-bg-color").data("error-counter",++errCnt);
+				return inputNode.addClass("error-bg-color");
 			}
 		};
 
@@ -69,166 +68,101 @@ var Sudoku = (function($) {
 			if (!inputNode)
 				return;
 			else {
-				errCnt = inputNode.data("error-counter");
-				if (errCnt > 0) {
-					--errCnt;
-					inputNode.data("error-counter", errCnt);
-					if (errCnt == 0) {
-						inputNode.removeClass("error-bg-color");	
-					}
-				}
+				inputNode.removeClass("error-bg-color");
 			}
 		};
 
-		/*
-		 *  Function that highlight/unhighlight errors after validation.
-		 *  Takes rowIndex, colIndex, blockIndex and hightLightBool.
-		 *  Highlight errors when highLightBool is true. 
-		 *  Unhighlight errors when highLightBool is false.
- 		 */
-		var highlightErrors = function(rowIndex, colIndex, blockIndex, highLightBool) {
-			var cell,x,y,row,col;
-
-			var input,errCnt;
-
-			//Check all 9 nodes in given row and column and add/remove error class when necessary.
-			for (var j=0;j<9;j++) {
-				if (rowIndex != -1) {
-					input = getInputNodeFromTable(rowIndex, j);
-					if (highLightBool) {
-						addErrorClass(input);
-					} else if (!highLightBool) {
-						removeErrorClass(input);
-					}
+		var unhighlightTable = function() {
+			for(var i = 0; i < 9; i++) {
+				for(var j = 0; j < 9; j++) {
+					removeErrorClass(getInputNodeFromTable(i, j));
 				}
-				if (colIndex != -1) {
-					input = getInputNodeFromTable(j, colIndex);
-					if (highLightBool) {
-						addErrorClass(input);
-					} else if (!highLightBool) {
-						removeErrorClass(input);
+			}		
+		}
+
+		var validateRows = function() {
+			var inputNode;
+			var inputVal;
+			for(var i = 0; i < 9; i++) {
+				var rowVals = [];
+				for(var j = 0; j < 9; j++) {
+					inputNode = $($('#sudokuTable')[0].rows[i].cells[j]).find("input");
+					inputVal =  parseInt(inputNode.val(), 10);
+					if(!isNaN(inputVal)) {
+						rowVals.push(inputVal);
+					}	
+				}
+				if(containsDuplicate(rowVals)) {
+					for(var k = 0; k < 9; k++) {
+						addErrorClass(getInputNodeFromTable(i, k));
 					}
 				}
 			}
+		}
 
-			//Check all 9 nodes in the given block and add/remove error class when necessary.
-			if (blockIndex != -1) {
-				x = Math.floor(blockIndex / 3) * 3;
-				y = Math.floor(blockIndex % 3) * 3;
-				for (i=0;i<3;i++) {
-					row = x + i;
-					for (j=0;j<3;j++) {
-						col = y + j;
-						input = getInputNodeFromTable(row, col);
-
-						if (highLightBool) {
-							addErrorClass(input);
-						} else {
-							removeErrorClass(input);
-						}
+		var validateCols = function() {
+			var inputNode;
+			var inputVal;
+			for(var i = 0; i < 9; i++) {
+				var colVals = [];
+				for(var j = 0; j < 9; j++) {
+					inputNode = $($('#sudokuTable')[0].rows[j].cells[i]).find("input");
+					inputVal =  parseInt(inputNode.val(), 10);
+					if(!isNaN(inputVal)) {
+						colVals.push(inputVal);
+					}	
+				}
+				if(containsDuplicate(colVals)) {
+					for(var k = 0; k < 9; k++) {
+						addErrorClass(getInputNodeFromTable(k, i));
 					}
 				}
 			}
-		};
+		}
 
-		var processDataAfterValidation = function(validate, index, val, curInputNode) {
-			var rowFailData, colFailData, blockFailData;
-			var rowVal,colVal,blocki,blockj,blockPos,blockVal;
-	    	var table = $('#sudokuTable')[0];
-	    	var validate, inputNode;
-
-			if (validate !== true) { // Enter when validation fails.
-    			// If we enter 2 wrong values continously. Unhighlight first highligted rows/cols/blocks.
-    			if (_lastSelectedCellObj == index && _lastSelectedFailObj) {
-    				rowFailData = _lastSelectedFailObj.rowFail;
-	    			colFailData = _lastSelectedFailObj.colFail;
-	    			blockFailData = _lastSelectedFailObj.blockFail;
-
-	    			rowVal = (rowFailData)?index.row:-1;
-	    			colVal = (colFailData)?index.col:-1;
-	    			blocki = Math.floor(index.row / 3);
-	    			blockj = Math.floor(index.col / 3);
-					blockPos = (blocki*3) + blockj;
-	    			blockVal = (blockFailData) ? blockPos :-1;
-
-	    			highlightErrors(rowVal, colVal, blockVal, false);
-    			}
-
-    			rowFailData = validate.rowFail;
-    			colFailData = validate.colFail;
-    			blockFailData = validate.blockFail;
-    			
-    			curInputNode.data("row-error",rowFailData);
-    			curInputNode.data("col-error",colFailData);
-    			curInputNode.data("block-error",blockFailData);
-
-    			rowVal = (rowFailData)?index.row:-1;
-    			colVal = (colFailData)?index.col:-1;
-    			blocki = Math.floor(index.row / 3);
-    			blockj = Math.floor(index.col / 3);
-				blockPos = (blocki*3) + blockj;
-    			blockVal = (blockFailData) ? blockPos :-1;
-
-    			highlightErrors(rowVal, colVal, blockVal, true);
-
-    			_lastSelectedFailObj = validate;
-
-    			for (var k=0; k<9; k++) {
-    				if (rowFailData) {
-    					if (index.col != k) {
-	    					cell = table.rows[index.row].cells[k];
-							inputNode = $(cell).find("input");
-	    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-								inputNode.data("row-error", true);
-							}
-						}
-    				}
-    				if (colFailData) {
-    					if (index.row != k) {
-    						cell = table.rows[k].cells[index.col];
-							inputNode = $(cell).find("input");
-	    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-								inputNode.data("col-error", true);
-							}
-    					}
-    				}
-    				if (blockVal != -1) {
-						x = Math.floor(blockVal / 3) * 3;
-						y = Math.floor(blockVal % 3) * 3;
-						for (var i=0;i<3;i++) {
-							row = x + i;
-							for (var j=0;j<3;j++) {
-								col = y + j;
-								if (index.row == row && index.col == col) {
-									continue;
-								}
-								cell = table.rows[row].cells[col];
-								inputNode = $(cell).find("input");
-		    					if (inputNode.data("can-edit") && inputNode.data("val") == val) {
-									inputNode.data("block-error", true);
-								}
-							}
-						}
+		var validateBlocks = function() {
+			var inputNode;
+			var inputVal;
+			for(var i = 0; i < 9; i++) {
+				var blockVals = [];
+				var blockRowStartPos = i - (i%3);
+				var blockColStartPos = (i % 3 ) * 3;
+				for(var j = 0; j < 9; j++) {
+					var rowB = Math.floor(blockRowStartPos + j / 3);
+					var colB = Math.floor(blockColStartPos + j % 3);
+					inputNode = $($('#sudokuTable')[0].rows[rowB].cells[colB]).find("input");
+					inputVal =  parseInt(inputNode.val(), 10);
+					if(!isNaN(inputVal)) {
+						blockVals.push(inputVal);
+					}	
+				}
+				if(containsDuplicate(blockVals)) {
+					for(var k = 0; k < 9; k++) {
+						var rowB = Math.floor(blockRowStartPos + k / 3);
+						var colB = Math.floor(blockColStartPos + k % 3);
+						addErrorClass(getInputNodeFromTable(rowB, colB));
 					}
-    			}
+				}
+			}
+		}
 
-    		} else { // Enter here when valiation is true.
-    			rowFailData = curInputNode.data("row-error");
-    			colFailData = curInputNode.data("col-error");
-    			blockFailData = curInputNode.data("block-error");
-    			rowVal = (rowFailData) ? index.row : -1;
-    			colVal = (colFailData) ? index.col : -1;
-    			blocki = Math.floor(index.row / 3);
-    			blockj = Math.floor(index.col / 3);
-				blockPos = (blocki*3) + blockj;
-				blockVal = (blockFailData) ? blockPos : -1;
-    			highlightErrors(rowVal, colVal, blockVal,false);
-    			curInputNode.data("row-error",false);
-    			curInputNode.data("col-error",false);
-    			curInputNode.data("block-error",false);
-    			_lastSelectedFailObj = {rowFailData:false, colFailData: false, rowFailData: false};
-    		}
-    		_lastSelectedCellObj = index;
+		var containsDuplicate = function(arr) {
+			if(!arr) return false;
+
+			var sorted_arr = arr.sort();
+			for (var i = 0; i < arr.length - 1; i++) {
+			    if (sorted_arr[i + 1] == sorted_arr[i]) {
+			        return true;
+			    }
+			}
+			return false;
+		}
+
+		var validateTableHighlightError = function() {
+			unhighlightTable();
+			validateRows();
+			validateCols();
+			validateBlocks();	
 		};
 
 		/*
@@ -421,9 +355,7 @@ var Sudoku = (function($) {
 	    			return;
 	    		}
 
-	    		// Pass values to Game class's and validate the value entered in the node.
-	    		validate = gameObj.validate(index.row,index.col,parseInt(val,10), parseInt(oldval,10));
-	    		processDataAfterValidation(validate, index, val, $(this));
+	    		validateTableHighlightError();
 
 	    		// Update all values with latest info.
 	    		$(this).data("oldval",val);
