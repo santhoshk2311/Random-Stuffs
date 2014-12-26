@@ -72,98 +72,16 @@ var Sudoku = (function($) {
 			}
 		};
 
-		var unhighlightTable = function() {
+		var highlightError = function(validatedMatrix) {
 			for(var i = 0; i < 9; i++) {
 				for(var j = 0; j < 9; j++) {
 					removeErrorClass(getInputNodeFromTable(i, j));
+					if (validatedMatrix[i][j] == -1)
+						addErrorClass(getInputNodeFromTable(i, j));
 				}
 			}		
-		}
-
-		var validateRows = function() {
-			var inputNode;
-			var inputVal;
-			for(var i = 0; i < 9; i++) {
-				var rowVals = [];
-				for(var j = 0; j < 9; j++) {
-					inputNode = $($('#sudokuTable')[0].rows[i].cells[j]).find("input");
-					inputVal =  parseInt(inputNode.val(), 10);
-					if(!isNaN(inputVal)) {
-						rowVals.push(inputVal);
-					}	
-				}
-				if(containsDuplicate(rowVals)) {
-					for(var k = 0; k < 9; k++) {
-						addErrorClass(getInputNodeFromTable(i, k));
-					}
-				}
-			}
-		}
-
-		var validateCols = function() {
-			var inputNode;
-			var inputVal;
-			for(var i = 0; i < 9; i++) {
-				var colVals = [];
-				for(var j = 0; j < 9; j++) {
-					inputNode = $($('#sudokuTable')[0].rows[j].cells[i]).find("input");
-					inputVal =  parseInt(inputNode.val(), 10);
-					if(!isNaN(inputVal)) {
-						colVals.push(inputVal);
-					}	
-				}
-				if(containsDuplicate(colVals)) {
-					for(var k = 0; k < 9; k++) {
-						addErrorClass(getInputNodeFromTable(k, i));
-					}
-				}
-			}
-		}
-
-		var validateBlocks = function() {
-			var inputNode;
-			var inputVal;
-			for(var i = 0; i < 9; i++) {
-				var blockVals = [];
-				var blockRowStartPos = i - (i%3);
-				var blockColStartPos = (i % 3 ) * 3;
-				for(var j = 0; j < 9; j++) {
-					var rowB = Math.floor(blockRowStartPos + j / 3);
-					var colB = Math.floor(blockColStartPos + j % 3);
-					inputNode = $($('#sudokuTable')[0].rows[rowB].cells[colB]).find("input");
-					inputVal =  parseInt(inputNode.val(), 10);
-					if(!isNaN(inputVal)) {
-						blockVals.push(inputVal);
-					}	
-				}
-				if(containsDuplicate(blockVals)) {
-					for(var k = 0; k < 9; k++) {
-						var rowB = Math.floor(blockRowStartPos + k / 3);
-						var colB = Math.floor(blockColStartPos + k % 3);
-						addErrorClass(getInputNodeFromTable(rowB, colB));
-					}
-				}
-			}
-		}
-
-		var containsDuplicate = function(arr) {
-			if(!arr) return false;
-
-			var sorted_arr = arr.sort();
-			for (var i = 0; i < arr.length - 1; i++) {
-			    if (sorted_arr[i + 1] == sorted_arr[i]) {
-			        return true;
-			    }
-			}
-			return false;
-		}
-
-		var validateTableHighlightError = function() {
-			unhighlightTable();
-			validateRows();
-			validateCols();
-			validateBlocks();	
 		};
+		
 
 		/*
 		 *  Attach events to passed input node when constructing UI.
@@ -354,8 +272,9 @@ var Sudoku = (function($) {
 	    			this.value = val;
 	    			return;
 	    		}
-
-	    		validateTableHighlightError();
+	    		var indexObj = $(this).data("index");
+	    		_currentSudokuMatrix[indexObj.row][indexObj.col] = val;
+	    		highlightError(gameObj.validate(_currentSudokuMatrix));
 
 	    		// Update all values with latest info.
 	    		$(this).data("oldval",val);

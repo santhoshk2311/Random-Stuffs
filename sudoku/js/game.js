@@ -7,11 +7,17 @@ function Game() {
 	var _sudokuMatrix;
 	var _solvedMatrix;
 	var _difficultyLevel=0;
-	var _validationMatrix = {
-		rowi:[],
-		colj:[],
-		blockij:[]
-	};
+	var _validationMatrix = [
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1],
+		[-1,-1,-1,-1,-1,-1,-1,-1,-1]
+	];
 
 	//Private Game Class Methods
 
@@ -75,96 +81,98 @@ function Game() {
 		return blockPos;
 	}
 
-	/*
-	 * Function that calculates _validationMatrix after new board is generated.
-	 */
-	var calculateValidationMatrix = function(sudokuMatrix) {
-		_validationMatrix = {
-			rowi:[],
-			colj:[],
-			blockij:[]
-		};
-		var blockPos, data;
-		for (i=0; i<9; i++) {
-			_validationMatrix.rowi[i] = [];
-			for (j=0; j<9; j++) {
-				//initialize col array if not available.
-				if (!_validationMatrix.colj[j])
-					_validationMatrix.colj[j] = [];
+	var validateRows = function(sudokuMatrix) {
+		var inputVal;
+		for(var i = 0; i < 9; i++) {
+			var rowVals = [];
+			for(var j = 0; j < 9; j++) {
+				inputVal =  sudokuMatrix[i][j];
+				if(inputVal >=1 && inputVal <=9) {
+					rowVals.push(inputVal);
+				}	
+			}
+			if(containsDuplicate(rowVals)) {
+				for(var k = 0; k < 9; k++) {
+					_validationMatrix[i][k] = -1;	
+				}
+			}	
+		}
+	}
 
-				blockPos = getBlockPos(i,j);
-				//initialize block array if not available.
-				if (!_validationMatrix.blockij[blockPos])
-					_validationMatrix.blockij[blockPos] = [];
-				
-				data = sudokuMatrix[i][j];
-				if (data >=1 && data <=9) {
-					_validationMatrix.rowi[i].push(data);
-					_validationMatrix.colj[j].push(data);
-					_validationMatrix.blockij[blockPos].push(data);
+	var validateCols = function(sudokuMatrix) {
+		var inputVal;
+		for(var i = 0; i < 9; i++) {
+			var colVals = [];
+			for(var j = 0; j < 9; j++) {
+				inputVal =  sudokuMatrix[j][i];
+				if(inputVal >=1 && inputVal <=9) {
+					colVals.push(inputVal);
+				}	
+			}
+			if(containsDuplicate(colVals)) {
+				for(var k = 0; k < 9; k++) {
+					_validationMatrix[k][i] = -1;
 				}
 			}
 		}
-	};
+	}
 
-	/*
-	 * Function that adds data to _validationMatrix everytime when
-	 * user enters data in UI.
-	 */
-	var addDataToValidationMatrix = function(row, col, val) {
-		if (isNaN(val))
-			return;
-		//update row array
-		if (!_validationMatrix.rowi[row])
-			_validationMatrix.rowi[row] = [];
-		_validationMatrix.rowi[row].push(val);
-
-		//update col array
-		if (!_validationMatrix.colj[col])
-			_validationMatrix.colj[col] = [];
-		_validationMatrix.colj[col].push(val);
-
-		//update block array
-		if (!_validationMatrix.blockij[getBlockPos(row,col)])
-			_validationMatrix.blockij[getBlockPos(row,col)] = [];
-		_validationMatrix.blockij[getBlockPos(row,col)].push(val);
-	};
-
-	/*
-	 * Function that deletes data to _validationMatrix everytime when
-	 * user deletes data in UI.
-	 */
-	var deleteDataFromValidationMatrix = function(row, col, val) {
-		var index,blockPos;
-
-		if (isNaN(val))
-			return;
-
-		if (_validationMatrix.rowi[row]) {
-			index = _validationMatrix.rowi[row].indexOf(val);
-			if (index > -1) {
-				_validationMatrix.rowi[row].splice(index,1);
+	var validateBlocks = function(sudokuMatrix) {
+		var inputVal;
+		for(var i = 0; i < 9; i++) {
+			var blockVals = [];
+			var blockRowStartPos = i - (i%3);
+			var blockColStartPos = (i % 3 ) * 3;
+			for(var j = 0; j < 9; j++) {
+				var rowB = Math.floor(blockRowStartPos + j / 3);
+				var colB = Math.floor(blockColStartPos + j % 3);
+				inputVal =  sudokuMatrix[rowB][colB];
+				if(inputVal >=1 && inputVal <=9) {
+					blockVals.push(inputVal);
+				}	
+			}
+			if(containsDuplicate(blockVals)) {
+				for(var k = 0; k < 9; k++) {
+					var rowB = Math.floor(blockRowStartPos + k / 3);
+					var colB = Math.floor(blockColStartPos + k % 3);
+					_validationMatrix[rowB][colB] = -1;
+				}
 			}
 		}
+	}
 
-		if (_validationMatrix.colj[col]) {
-			index = _validationMatrix.colj[col].indexOf(val);
-			if (index > -1) {
-				_validationMatrix.colj[col].splice(index,1);
+	var resetValidationMatrix = function() {
+		for(var i =0; i < 9; i++) {
+			for(var j = 0; j < 9; j++) {
+				_validationMatrix[i][j] = 0;
 			}
 		}
+	}
 
-		blockPos = getBlockPos(row,col);
+	var containsDuplicate = function(arr) {
+		if(!arr) return false;
 
-		if (_validationMatrix.blockij[blockPos]) {
-			index = _validationMatrix.blockij[blockPos].indexOf(val);
-			if (index > -1) {
-				_validationMatrix.blockij[blockPos].splice(index,1);
-			}
+		var sorted_arr = arr.sort();
+		for (var i = 0; i < arr.length - 1; i++) {
+		    if (sorted_arr[i + 1] == sorted_arr[i]) {
+		        return true;
+		    }
 		}
-	};
+		return false;
+	}
 
 	//Public Game Class Methods.
+
+	/*
+	 * validate when a number is entered.
+	 */
+	this.validate = function(sudokuMatrix) {
+		resetValidationMatrix();
+		validateRows(sudokuMatrix);
+		validateCols(sudokuMatrix);
+		validateBlocks(sudokuMatrix);
+		return _validationMatrix;
+	};
 
 	/*
 	 * Function sets game difficulty level.
@@ -200,7 +208,6 @@ function Game() {
 	 */
 	this.createBoardMatrix =  function() {
 		var matrix = generateBoardMatrix();
-		calculateValidationMatrix(matrix);
 		return matrix;
 	};
 } // Game Class Ends.
